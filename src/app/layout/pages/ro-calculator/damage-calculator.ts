@@ -868,14 +868,24 @@ export class DamageCalculator {
     const infoForClass = this.infoForClass;
 
     const skillFormula = (_totalAtk: number, _calcCri: boolean) => {
-      let total = this._class.modifyFinalAtk(_totalAtk, infoForClass);
+      // ATK is an integer in-game before the damage multipliers, so floor it up
+      // front. The previous code only floored it implicitly via the first
+      // `floor(total * criMultiplier)` step, which equals floor(ATK) only when
+      // criMultiplier is 1 (no crit-damage gear). With crit-damage gear the
+      // fractional ATK leaked into the crit multiplier and inflated everything
+      // downstream — verified against in-game replay (Focused Arrow Strike).
+      let total = floor(this._class.modifyFinalAtk(_totalAtk, infoForClass));
       if (_calcCri) total = floor(total * criMultiplier); // tested
       total = floor(total * rangedMultiplier); // tested
       total = floor(total * baseSkillMultiplier); // tested
-      total = floor(total * equipSkillMultiplier);
+      // DEF (res / hard def / soft def) is applied right after the skill ratio,
+      // BEFORE the per-skill equipment bonus — verified against in-game replay
+      // (Focused Arrow Strike on a soft-def target). Subtracting soft def after
+      // equipSkillMultiplier overstated damage (the bonus re-amplified the def).
       if (!isHDefToSDef || isIgnoreRes) total = floor(total * resReduction);
       total = floor(total * hardDef);
       total = total - softDef; // tested
+      total = floor(total * equipSkillMultiplier);
       if (_calcCri) total = floor(total * this.criMultiplier);
 
       for (const final of finalDmgMultipliers) {
