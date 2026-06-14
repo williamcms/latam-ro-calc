@@ -1,0 +1,25 @@
+# Dependencies & build output (reinstalled/rebuilt inside the image)
+node_modules
+dist
+.angular
+
+# Git & CI
+.git
+.gitignore
+.github
+
+# Editor / OS noise
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Logs & coverage
+*.log
+npm-debug.log*
+coverage
+
+# Docker artifacts themselves
+Dockerfile
+docker-compose.yml
+.dockerignore

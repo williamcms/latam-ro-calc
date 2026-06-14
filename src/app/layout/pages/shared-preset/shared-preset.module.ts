@@ -18,6 +18,7 @@ import { RoCalculatorModule } from '../ro-calculator/ro-calculator.module';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { SkillDetailComponent } from './skill-detail/skill-detail.component';
 import { CascadeSelectModule } from 'primeng/cascadeselect';
+import { IconUrlPipe } from '../../../pipes/icon-url.pipe';
 
 @NgModule({
   imports: [
@@ -36,6 +37,7 @@ import { CascadeSelectModule } from 'primeng/cascadeselect';
     ConfirmDialogModule,
     CascadeSelectModule,
     RoCalculatorModule,
+    IconUrlPipe,
   ],
   declarations: [SharedPresetComponent, EquipmentUiComponent, EquipmentInDetailComponent, SkillDetailComponent],
 })

@@ -144,6 +144,9 @@ export class Calculator {
   private equipItem = new Map<ItemTypeEnum, ItemModel>();
   private equipItemName = new Map<ItemTypeEnum, string>();
   private equipItemNameSet = new Set<string>();
+  /** Ids of the currently-equipped items — backs the `EQUIP_ID[...]` combo
+   *  condition (id matching survives display-name changes like pt-BR localization). */
+  private equipItemIdSet = new Set<number>();
   private mapRefine = new Map<ItemTypeEnum, number>();
   private mapGrade = new Map<ItemTypeEnum, string>();
   private mapItemNameRefine = new Map<string, number>();
@@ -304,6 +307,10 @@ export class Calculator {
 
   private isEquipItem(itemName: string) {
     return this.equipItemNameSet.has(itemName);
+  }
+
+  private isEquipItemId(itemId: number) {
+    return this.equipItemIdSet.has(itemId);
   }
 
   isAllowAmmo() {
@@ -499,6 +506,7 @@ export class Calculator {
     }
 
     this.equipItemNameSet = new Set(this.equipItemName.values());
+    this.equipItemIdSet = new Set([...this.equipItem.values()].map((it) => it?.id).filter((id): id is number => !!id));
     for (const [itemType, itemName] of this.equipItemName) {
       this.mapItemNameRefine.set(itemName, this.mapRefine.get(itemType));
     }
@@ -873,6 +881,23 @@ export class Calculator {
       if (restCondition.startsWith('===')) return { isValid: true, restCondition };
     }
 
+    // EQUIP_ID[480062]50  — combo bonus matched by partner item id instead of
+    // display name (survives pt-BR renaming and bracketed names). Same grammar as
+    // EQUIP[]: `&&` = all required, `||` = any-of. The remaining condition (an
+    // optional `===`, REFINE[...], or a bare value) is handled by recursing.
+    const [unusedEquipId, idCondition] = restCondition.match(/^EQUIP_ID\[([\d|&]+)]/) ?? [];
+    if (idCondition) {
+      const valid = idCondition
+        .split('&&')
+        .filter(Boolean)
+        .every((group) => group.split('||').some((id) => this.isEquipItemId(Number(id))));
+      if (!valid) return { isValid: false, restCondition };
+
+      restCondition = restCondition.replace(unusedEquipId, '');
+      if (restCondition.startsWith('===')) restCondition = restCondition.replace('===', '');
+      return this.validateCondition({ itemType, itemRefine, script: restCondition });
+    }
+
     // EQUIP[Bear's Power]===50
     const [setCondition, itemSet] = restCondition.match(/^EQUIP\[(.+?)]/) ?? [];
     if (itemSet) {
@@ -964,7 +989,7 @@ export class Calculator {
 
   private isAreadyCalcCombo(params: { item: ItemModel; attr: string; lineScript: string; }) {
     const { item, attr, lineScript } = params;
-    if (lineScript.startsWith('EQUIP[')) {
+    if (lineScript.startsWith('EQUIP[') || lineScript.startsWith('EQUIP_ID[')) {
       const comboFix = `${item.id}-${attr}-${lineScript}`;
       if (this.equipCombo.has(comboFix)) {
         return true;

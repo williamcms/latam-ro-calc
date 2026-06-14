@@ -10,7 +10,7 @@
               [showClear]="true"
               [showToggleAll]="false"
               [maxSelectedLabels]="9"
-              placeholder="Monster group"
+              placeholder="Grupo de monstros"
               (onChange)="onSelectGroupChange()"
               (onClear)="onSelectGroupChange()"
             >
@@ -22,7 +22,7 @@
               autocomplete="off"
               type="text"
               pInputText
-              placeholder="search"
+              placeholder="buscar"
               [(ngModel)]="textSearch"
               (ngModelChange)="onTextSearchChange()"
             />
@@ -47,24 +47,24 @@
             <!-- <i class="pi pi-tag"></i> -->
             <span>{{ 'Lv ' + product.level }}</span>
           </span>
-          <p-tag *ngIf="product.className === 'Boss'" [value]="product.className" severity="danger"></p-tag>
-          <span *ngIf="product.className !== 'Boss'">{{ product.className }}</span>
+          <p-tag *ngIf="product.className === 'Boss'" [value]="product.className | monsterTerm: 'type'" severity="danger"></p-tag>
+          <span *ngIf="product.className !== 'Boss'">{{ product.className | monsterTerm: 'type' }}</span>
           <button pButton icon="pi pi-check" class="p-button-rounded" (click)="onSelectMonster(product)"></button>
         </div>
         <div class="flex flex-column align-items-center gap-2 py-2" style="height: 70%">
           <img
             class="shadow-2 border-round bg-white"
             style="height: 75%"
-            [src]="'https://static.divine-pride.net/images/mobs/png/' + product.value + '.png'"
+            [src]="product.value | monsterSprite"
             [alt]="product.name"
           />
           <div class="font-semibold">{{ product.name }}</div>
         </div>
         <div class="flex align-items-center justify-content-between">
           <span>
-            <span class="{{ 'font-semibold property_' + product.elementName }}">{{ product.elementName }}</span>
-            <span> / {{ product.raceName }}</span>
-            <span> / {{ product.scaleName }}</span>
+            <span class="{{ 'font-semibold property_' + product.elementName }}">{{ product.elementName | monsterTerm: 'element' }}</span>
+            <span> / {{ product.raceName | monsterTerm: 'race' }}</span>
+            <span> / {{ product.scaleName | monsterTerm: 'size' }}</span>
           </span>
           <span>{{ product.health | number }}</span>
         </div>

@@ -7,7 +7,7 @@
           class="p-button-help"
           pButton
           icon="pi pi-download"
-          label="Load"
+          label="Carregar"
           [disabled]="!selectedCloudPreset"
           (click)="onLoadPresetClick()"
         ></button>
@@ -18,14 +18,14 @@
           class="p-button-danger"
           pButton
           icon="pi pi-trash"
-          label="Delete"
+          label="Excluir"
           [disabled]="!selectedCloudPreset"
           (click)="deletePreset()"
         ></button>
       </div>
       <div class="col-12">
         <div class="p-inputgroup dropdown-joblist">
-          <span class="p-inputgroup-addon" style="width: 80px">Filter</span>
+          <span class="p-inputgroup-addon" style="width: 80px">Filtro</span>
           <p-dropdown
             inputId="character"
             [autoDisplayFirst]="false"
@@ -36,18 +36,18 @@
             filterBy="label"
             scrollHeight="350px"
             [(ngModel)]="selectedClassIdFilter"
-            placeholder="All classes"
+            placeholder="Todas as classes"
             (onChange)="onClassFilterChange()"
           >
             <ng-template let-job pTemplate="selectedItem">
               <div class="flex gap-2 py-0 align-items-center" *ngIf="selectedClassIdFilter">
-                <img src="assets/demo/images/jobs/icon_jobs_{{ job.icon }}.png" alt="" class="job_img" />
+                <img [src]="job.icon | iconUrl: 'job'" alt="" class="job_img" />
                 <div class="text_ellips">{{ job.label }}</div>
               </div>
             </ng-template>
             <ng-template let-job pTemplate="item">
               <div class="flex gap-2 py-0">
-                <img src="assets/demo/images/jobs/icon_jobs_{{ job.icon }}.png" alt="" class="job_img" />
+                <img [src]="job.icon | iconUrl: 'job'" alt="" class="job_img" />
                 <div class="text_ellips">{{ job.label }}</div>
               </div>
             </ng-template>
@@ -62,14 +62,14 @@
             type="text"
             [value]="presetInfo?.label || ''"
             pInputText
-            placeholder="preset name"
+            placeholder="nome da predefinição"
           />
           <button
             type="button"
             class="p-button-info"
             pButton
             icon="pi pi-file-edit"
-            label="Rename"
+            label="Renomear"
             [disabled]="!selectedCloudPreset || !presetName.value"
             (click)="onRenamePresetClick(presetName.value)"
           ></button>
@@ -87,7 +87,7 @@
           <ng-template let-item pTemplate="item">
             <div class="flex align-items-center gap-1">
               <i *ngIf="item.isPublished" class="pi pi-send"></i>
-              <img src="assets/demo/images/jobs/icon_jobs_{{ item.icon }}.png" alt="" class="job_img" />
+              <img [src]="item.icon | iconUrl: 'job'" alt="" class="job_img" />
               {{ item.label }}
             </div>
           </ng-template>
@@ -99,7 +99,7 @@
           class="p-button-help"
           pButton
           icon="pi pi-download"
-          label="Load"
+          label="Carregar"
           [disabled]="!selectedPreset"
           (click)="onLoadPresetClick()"
         ></button>
@@ -110,7 +110,7 @@
           class="p-button-danger"
           pButton
           icon="pi pi-trash"
-          label="Delete"
+          label="Excluir"
           [disabled]="!selectedPreset"
           (click)="deletePreset()"
         ></button>
@@ -121,7 +121,7 @@
           class="p-button-success"
           pButton
           icon="pi pi-save"
-          label="Save To Cloud"
+          label="Salvar na Nuvem"
           [disabled]="!selectedPreset || isProcessing"
           (click)="saveToCloud()"
         ></button>
@@ -163,14 +163,14 @@
             autocomplete="off"
             type="text"
             pInputText
-            placeholder="Shared name"
+            placeholder="Nome compartilhado"
           />
           <button
             type="button"
             class="p-button-info"
             pButton
             icon="pi pi-send"
-            label="Share"
+            label="Compartilhar"
             [disabled]="!selectedCloudPreset || !sharedName.value || isSharedPreset"
             (click)="sharePreset(sharedName.value); sharedName.value = ''"
           ></button>
@@ -178,7 +178,7 @@
       </div>
       <div class="col-12 text-lg font-semibold" *ngIf="isSharedPreset">
         Shared name: <span class="text-primary-300"> {{ presetInfo?.publishName }} </span>
-        <button type="button" class="p-button-warning" pButton label="Cancel" (click)="unsharePreset()"></button>
+        <button type="button" class="p-button-warning" pButton label="Cancelar" (click)="unsharePreset()"></button>
       </div>
       <!-- <div class="col-12">
         <div class="grid p-fluid grid-nogutter" *ngIf="isSharedPreset">
@@ -190,7 +190,7 @@
               [showHeader]="false"
               [showToggleAll]="false"
               selectedItemsLabel="{0} tags selected"
-              placeholder="Available tags"
+              placeholder="Etiquetas disponíveis"
               [maxSelectedLabels]="10"
             >
               <ng-template let-tags pTemplate="selectedItems">
@@ -213,7 +213,7 @@
               class="p-button-warning"
               pButton
               icon="pi pi-tags"
-              label="Tag"
+              label="Etiqueta"
               [disabled]="!selectedCloudPreset"
               (click)="addTags()"
             ></button>
@@ -230,7 +230,7 @@
 
     <div class="grid">
       <div class="col-fixed flex gap-2" *ngIf="!!model?.class">
-        <img src="assets/demo/images/jobs/icon_jobs_{{ jobIconMap[model?.class] }}.png" alt="" class="job_img" />
+        <img [src]="jobIconMap[model?.class] | iconUrl: 'job'" alt="" class="job_img" />
         <span class="summary_highlight text-xl"> {{ classLabelMap[model?.class] }} </span>
       </div>
       <div class="col-fixed">
@@ -267,7 +267,7 @@
       <div class="col-4">
         <div *ngIf="!item.mainId">--- {{ item.itemType }} ---</div>
         <div *ngIf="item.mainId" class="item_template flex gap-1">
-          <img src="assets/demo/images/items/{{ item.mainId }}.png" alt="" class="item_img" />
+          <img [src]="item.mainId | iconUrl: 'item'" alt="" class="item_img" />
           <div class="text_ellips pr-2" style="text-overflow: ellipsis">
             {{ item.refineTxt }} {{ getItemLabel(item.mainId) }}
           </div>
@@ -275,8 +275,8 @@
       </div>
       <div *ngFor="let cardId of item.cardIds" class="col-2">
         <div class="item_template flex gap-1">
-          <img *ngIf="item.isHead" src="assets/demo/images/items/{{ cardId }}.png" alt="" class="item_img" />
-          <img *ngIf="!item.isHead" src="assets/demo/images/items/card.png" alt="" class="item_img" />
+          <img *ngIf="item.isHead" [src]="cardId | iconUrl: 'item'" alt="" class="item_img" />
+          <img *ngIf="!item.isHead" src="assets/icons/card.png" alt="" class="item_img" />
           <div class="text_ellips pr-2" style="text-overflow: ellipsis">
             {{ getItemLabel(cardId) }}
           </div>
@@ -284,7 +284,7 @@
       </div>
       <div *ngFor="let enchantId of item.enchantIds" class="col-2">
         <div class="item_template flex gap-1">
-          <img src="assets/demo/images/items/{{ enchantId }}.png" alt="" class="item_img" />
+          <img [src]="enchantId | iconUrl: 'item'" alt="" class="item_img" />
           <div class="text_ellips pr-2" style="text-overflow: ellipsis">
             {{ getItemLabel(enchantId) }}
           </div>
@@ -305,7 +305,7 @@
           <div class="col-12">
             <div *ngIf="!item.mainId">--- {{ item.itemType }} ---</div>
             <div *ngIf="item.mainId" class="item_template flex gap-1">
-              <img src="assets/demo/images/items/{{ item.mainId }}.png" alt="" class="item_img" />
+              <img [src]="item.mainId | iconUrl: 'item'" alt="" class="item_img" />
               <div class="text_ellips pr-2" style="text-overflow: ellipsis">{{ getItemLabel(item.mainId) }}</div>
             </div>
           </div>
@@ -320,7 +320,7 @@
           <div class="col-12">
             <div *ngIf="!item.mainId">--- {{ item.itemType }} ---</div>
             <div *ngIf="item.mainId" class="item_template flex gap-1">
-              <img src="assets/demo/images/items/{{ item.mainId }}.png" alt="" class="item_img" />
+              <img [src]="item.mainId | iconUrl: 'item'" alt="" class="item_img" />
               <div class="text_ellips pr-2" style="text-overflow: ellipsis">
                 {{ item.refineTxt }} {{ getItemLabel(item.mainId) }}
               </div>

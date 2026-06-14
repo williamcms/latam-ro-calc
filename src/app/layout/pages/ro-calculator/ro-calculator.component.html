@@ -31,12 +31,12 @@
         <div class="grid grid-nogutter">
           <div class="col-12">
             <div class="p-inputgroup">
-              <input #presetName [autocomplete]="false" type="text" pInputText placeholder="Name" />
+              <input #presetName [autocomplete]="false" type="text" pInputText placeholder="Nome" />
               <button
                 type="button"
                 class="p-button-success"
                 pButton
-                label="Save"
+                label="Salvar"
                 [loading]="isInProcessingPreset"
                 [disabled]="!presetName.value || isInProcessingPreset"
                 (click)="updatePreset(presetName.value)"
@@ -51,19 +51,19 @@
                 [options]="preSets"
                 [filter]="true"
                 filterBy="label"
-                placeholder="Presets"
+                placeholder="Predefinições"
                 scrollHeight="350px"
                 [(ngModel)]="selectedPreset"
               >
                 <ng-template let-job pTemplate="selectedItem">
                   <div class="flex gap-2 py-0 align-items-center" *ngIf="model.class">
-                    <img src="assets/demo/images/jobs/icon_jobs_{{ job.icon }}.png" alt="" class="job_img" />
+                    <img [src]="job.icon | iconUrl: 'job'" alt="" class="job_img" />
                     <div class="text_ellips">{{ job.label }}</div>
                   </div>
                 </ng-template>
                 <ng-template let-job pTemplate="item">
                   <div class="flex gap-2 py-0">
-                    <img src="assets/demo/images/jobs/icon_jobs_{{ job.icon }}.png" alt="" class="job_img" />
+                    <img [src]="job.icon | iconUrl: 'job'" alt="" class="job_img" />
                     <div class="text_ellips">{{ job.label }}</div>
                   </div>
                 </ng-template>
@@ -71,7 +71,7 @@
               <p-splitButton
                 styleClass="p-button-help"
                 icon="pi pi-download"
-                label="Load"
+                label="Carregar"
                 (onClick)="loadPreset()"
                 [disabled]="!selectedPreset || isInProcessingPreset"
                 [model]="loadBtnItems"
@@ -80,8 +80,20 @@
           </div>
 
           <div class="col-12">
+            <button
+              type="button"
+              pButton
+              class="p-button-info w-full"
+              icon="pi pi-upload"
+              label="Importar Replay"
+              [disabled]="isInProcessingPreset || replayBusy"
+              (click)="openReplayImport()"
+            ></button>
+          </div>
+
+          <div class="col-12">
             <div class="p-inputgroup dropdown-joblist">
-              <span class="p-inputgroup-addon" style="width: 80px">Class</span>
+              <span class="p-inputgroup-addon" style="width: 80px">Classe</span>
               <p-dropdown
                 inputId="character"
                 [autoDisplayFirst]="false"
@@ -90,20 +102,20 @@
                 [filter]="true"
                 filterBy="label"
                 [(ngModel)]="model.class"
-                placeholder="Class"
+                placeholder="Classe"
                 scrollHeight="350px"
                 [disabled]="isInProcessingPreset"
                 (onChange)="onClassChange()"
               >
                 <ng-template let-job pTemplate="selectedItem">
                   <div class="flex gap-2 py-0 align-items-center" *ngIf="model.class">
-                    <img src="assets/demo/images/jobs/icon_jobs_{{ job.icon }}.png" alt="" class="job_img" />
+                    <img [src]="job.icon | iconUrl: 'job'" alt="" class="job_img" />
                     <div class="text_ellips">{{ job.label }}</div>
                   </div>
                 </ng-template>
                 <ng-template let-job pTemplate="item">
                   <div class="flex gap-2 py-0">
-                    <img src="assets/demo/images/jobs/icon_jobs_{{ job.icon }}.png" alt="" class="job_img" />
+                    <img [src]="job.icon | iconUrl: 'job'" alt="" class="job_img" />
                     <div class="text_ellips">{{ job.label }}</div>
                   </div>
                 </ng-template>
@@ -112,7 +124,7 @@
           </div>
           <div class="col">
             <div class="p-inputgroup">
-              <span class="p-inputgroup-addon" style="width: 80px">Level</span>
+              <span class="p-inputgroup-addon" style="width: 80px">Nível</span>
               <p-dropdown
                 inputId="level"
                 [autoDisplayFirst]="false"
@@ -131,7 +143,7 @@
               type="button"
               class="p-button-warning"
               pButton
-              label="Up Class"
+              label="Subir Classe"
               [disabled]="!canPromote || isInProcessingPreset"
               (click)="onJobPromotionClick()"
             ></button>
@@ -154,14 +166,14 @@
           </div>
           <div class="col-12">
             <span class="p-inputgroup-addon"
-              >Status:
+              >Atributos:
               <span [className]="availablePoints < 0 ? 'ml-2 summary_monster_value px-1 font-semibold' : 'ml-2'">
                 {{ availablePoints }}
                 <span [hidden]="!appropriateLevel">(Lv {{ appropriateLevel > 200 ? 'x' : appropriateLevel }})</span>
               </span>
 
               <span [hidden]="!isAllowTraitStat"
-                >, Trait:
+                >, Talentos:
                 <span [className]="availableTraitPoints < 0 ? ' summary_monster_value px-1 font-semibold' : ''">
                   {{ availableTraitPoints }}
                   <span [hidden]="!appropriateLevelForTrait">(Lv {{ appropriateLevelForTrait > 300 ? 'x' : appropriateLevelForTrait }})</span>
@@ -181,7 +193,7 @@
               <div class="col-12 grid grid-nogutter">
                 <div class="col-6">
                   <app-status-input
-                    label="Str"
+                    label="FOR"
                     [dropdownList]="mainStatusList"
                     [(value)]="model.str"
                     (valueChange)="onBaseStatusChange()"
@@ -190,7 +202,7 @@
                 </div>
                 <div class="col-6">
                   <app-status-input
-                    label="Pow"
+                    label="POD"
                     [disabled]="!isAllowTraitStat"
                     [dropdownList]="traitStatusList"
                     [(value)]="model.pow"
@@ -205,7 +217,7 @@
               <div class="col-12 grid grid-nogutter">
                 <div class="col-6">
                   <app-status-input
-                    label="Agi"
+                    label="AGI"
                     [dropdownList]="mainStatusList"
                     [(value)]="model.agi"
                     (valueChange)="onBaseStatusChange()"
@@ -214,7 +226,7 @@
                 </div>
                 <div class="col-6">
                   <app-status-input
-                    label="Sta"
+                    label="STA"
                     [disabled]="!isAllowTraitStat"
                     [dropdownList]="traitStatusList"
                     [(value)]="model.sta"
@@ -229,7 +241,7 @@
               <div class="col-12 grid grid-nogutter">
                 <div class="col-6">
                   <app-status-input
-                    label="Vit"
+                    label="VIT"
                     [dropdownList]="mainStatusList"
                     [(value)]="model.vit"
                     (valueChange)="onBaseStatusChange()"
@@ -238,7 +250,7 @@
                 </div>
                 <div class="col-6">
                   <app-status-input
-                    label="Wis"
+                    label="SAB"
                     [disabled]="!isAllowTraitStat"
                     [dropdownList]="traitStatusList"
                     [(value)]="model.wis"
@@ -253,7 +265,7 @@
               <div class="col-12 grid grid-nogutter">
                 <div class="col-6">
                   <app-status-input
-                    label="Int"
+                    label="INT"
                     [dropdownList]="mainStatusList"
                     [(value)]="model.int"
                     (valueChange)="onBaseStatusChange()"
@@ -262,7 +274,7 @@
                 </div>
                 <div class="col-6">
                   <app-status-input
-                    label="Spl"
+                    label="FEI"
                     [disabled]="!isAllowTraitStat"
                     [dropdownList]="traitStatusList"
                     [(value)]="model.spl"
@@ -277,7 +289,7 @@
               <div class="col-12 grid grid-nogutter">
                 <div class="col-6">
                   <app-status-input
-                    label="Dex"
+                    label="DES"
                     [dropdownList]="mainStatusList"
                     [(value)]="model.dex"
                     (valueChange)="onBaseStatusChange()"
@@ -286,7 +298,7 @@
                 </div>
                 <div class="col-6">
                   <app-status-input
-                    label="Con"
+                    label="CON"
                     [disabled]="!isAllowTraitStat"
                     [dropdownList]="traitStatusList"
                     [(value)]="model.con"
@@ -301,7 +313,7 @@
               <div class="col-12 grid grid-nogutter">
                 <div class="col-6">
                   <app-status-input
-                    label="Luk"
+                    label="SOR"
                     [dropdownList]="mainStatusList"
                     [(value)]="model.luk"
                     (valueChange)="onBaseStatusChange()"
@@ -310,7 +322,7 @@
                 </div>
                 <div class="col-6">
                   <app-status-input
-                    label="Crt"
+                    label="CRV"
                     [disabled]="!isAllowTraitStat"
                     [dropdownList]="traitStatusList"
                     [(value)]="model.crt"
@@ -332,7 +344,7 @@
               <div class="col-6">
                 <div class="grid grid-nogutter">
                   <div class="col-12">
-                    Alt+Q Atk:
+                    Alt+Q ATQ:
                     <span class="font-semibold px-1 summary_stat_atk">
                       {{ totalSummary?.calc?.totalStatusAtk || 0 }} +
                       {{
@@ -344,52 +356,52 @@
                     </span>
                   </div>
                   <div [hidden]="env.production" class="col-12">
-                    Equip Atk:
+                    ATQ Equip:
                     <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.atk || 0 }} + {{ totalSummary?.atkPercent || 0 }} %</span>
                   </div>
                   <div class="col-6">
-                    P.Atk:
+                    P.ATQ:
                     <span class="font-semibold px-1 summary_stat_atk2">{{ totalSummary?.dmg?.pAtk || 0 }}</span>
                   </div>
                   <div class="col-6">
-                    C.Rate:
+                    T.CRÍT:
                     <span class="font-semibold px-1 summary_stat_atk2">{{ totalSummary?.dmg?.cRate || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    ASPD:
+                    VelAtq:
                     <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.calc?.totalAspd || 0 }}</span>
                     <span class="font-semibold px-1 summary_highlight">( {{ totalSummary?.calc?.hitPerSecs || 0 }} Hits/s )</span>
                   </div>
                   <div class="col-12">
-                    Hit:
+                    Precisão:
                     <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.calc?.totalHit || 0 }}</span>
-                    Perfect:
+                    Perfeito:
                     <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.calc?.totalPerfectHit || 0 }} %</span>
                   </div>
                   <div class="col-12">
-                    CriRate:
+                    Crítico:
                     <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.calc?.totalCri || 0 }} %</span>
-                    Dmg: <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.criDmg || 0 }} %</span>
+                    Dano: <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.criDmg || 0 }} %</span>
                   </div>
                   <div class="col-12">
-                    Melee:
-                    <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.melee || 0 }} %</span> Range:
+                    Corpo a corpo:
+                    <span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.melee || 0 }} %</span> À distância:
                     <Span class="font-semibold px-1 summary_stat_atk">{{ totalSummary?.range || 0 }} %</Span>
                   </div>
                   <div class="col-12">
-                    Def:
+                    DEF:
                     <span class="font-semibold px-1 summary_stat_def">{{ totalSummary?.calc?.softDef || 0 }} + {{ totalSummary?.calc?.def || 0 }}</span>
-                    Res:
+                    RES:
                     <span class="font-semibold px-1 summary_stat_def2">{{ totalSummary?.calc?.res || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    Mdef:
+                    DEFM:
                     <span class="font-semibold px-1 summary_stat_def">{{ totalSummary?.calc?.softMdef || 0 }} + {{ totalSummary?.calc?.mdef || 0 }}</span>
-                    MRes:
+                    RESM:
                     <span class="font-semibold px-1 summary_stat_def2">{{ totalSummary?.calc?.mres || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    Flee:
+                    ESQV:
                     <span class="font-semibold px-1 summary_stat_def">{{ totalSummary?.calc?.totalFlee || 0 }} + {{ totalSummary?.calc?.totalPerfectDodge || 0 }}</span>
                   </div>
                 </div>
@@ -397,7 +409,7 @@
               <div class="col-6">
                 <div class="grid grid-nogutter mx-1">
                   <div class="col-12">
-                    Alt+Q Matk:
+                    Alt+Q ATQM:
                     <span class="font-semibold px-1 summary_stat_matk"
                       >{{ totalSummary?.calc?.totalStatusMatk || 0 }} +
                       {{
@@ -409,31 +421,31 @@
                     >
                   </div>
                   <div [hidden]="env.production" class="col-12">
-                    Equip Matk:
+                    ATQM Equip:
                     <span class="font-semibold px-1 summary_stat_matk">{{ totalSummary?.matk || 0 }} + {{ totalSummary?.matkPercent || 0 }} %</span>
                   </div>
                   <div class="col-12">
-                    Matk
+                    ATQM
                     <span class="font-semibold px-1 summary_stat_matk">{{ totalSummary?.matkPercent || 0 }} %</span>
-                    S.Matk:
+                    S.ATQM:
                     <span class="font-semibold px-1 summary_stat_matk2">{{ totalSummary?.dmg?.sMatk || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    After Cast Delay:
+                    Atraso Pós-Conj.:
                     <span class="font-semibold px-1 summary_stat_matk">{{ totalSummary?.acd || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    Fixed Cast Time:
+                    Conj. Fixa:
                     <span class="font-semibold px-1 summary_stat_matk">{{ totalSummary?.fct || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    Variable Cast Time:
+                    Conj. Variável:
                     <span class="font-semibold px-1 summary_stat_matk">{{ totalSummary?.vct || 0 }}</span>
                   </div>
                   <div class="col-12">
-                    Dex2 Int1:
+                    DES2 INT1:
                     <span class="font-semibold px-1 summary_stat_yellow">{{ totalSummary?.calc?.dex2int1 || 0 }}</span>
-                    <span [hidden]="totalSummary?.calc?.to530 <= 0">{{ '( อีก ' + totalSummary?.calc?.to530 + ' )' }}</span>
+                    <span [hidden]="totalSummary?.calc?.to530 <= 0">{{ '( faltam ' + totalSummary?.calc?.to530 + ' )' }}</span>
                   </div>
                   <div class="col-12 px-1 border_default hp-sp-section" [hidden]="hideHpSp[selectedCharacter?.className]">
                     <div class="grid grid-nogutter">
@@ -483,7 +495,7 @@
                   [showToggleAll]="false"
                   scrollHeight="400px"
                   selectedItemsLabel="{0} slot selected"
-                  placeholder="Enable item slot to compare"
+                  placeholder="Ative o slot do item para comparar"
                   [maxSelectedLabels]="6"
                   (onChange)="onListItemComparingChange()"
                   (onClear)="onListItemComparingChange(true)"
@@ -500,7 +512,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'weapon'"
-          [placeholder]="'Weapon'"
+          [placeholder]="'Arma'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="weaponList"
@@ -532,14 +544,14 @@
               [(ngModel)]="model.propertyAtk"
               [disabled]="!model.weapon"
               [showClear]="true"
-              placeholder="เคลือบ"
+              placeholder="Conversor"
               scrollHeight="300px"
               (onChange)="onPropertyAtkChange()"
             >
               <ng-template let-item pTemplate="selectedItem">
                 <div class="flex gap-1" *ngIf="model.propertyAtk">
                   <div class="flex gap-1 item_template">
-                    <img src="assets/demo/images/items/{{ item.img }}.png" alt="" class="item_img" />
+                    <img [src]="item.img | iconUrl: 'item'" alt="" class="item_img" />
                     <div class="{{ 'property_' + item.element }}">{{ item.label }}</div>
                   </div>
                 </div>
@@ -547,7 +559,7 @@
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1">
                   <div class="flex gap-1 item_template">
-                    <img src="assets/demo/images/items/{{ item.img }}.png" alt="" class="item_img" />
+                    <img [src]="item.img | iconUrl: 'item'" alt="" class="item_img" />
                     <div class="{{ 'property_' + item.element }}">{{ item.label }}</div>
                   </div>
                 </div>
@@ -566,12 +578,12 @@
               scrollHeight="350px"
               [(ngModel)]="model.ammo"
               (onChange)="onSelectItem('ammo', $event.value)"
-              placeholder="Ammo"
+              placeholder="Munição"
               [disabled]="!model.weapon"
             >
               <ng-template let-item pTemplate="selectedItem">
                 <div class="flex gap-1 item_template" *ngIf="model.ammo">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
                   <div class="{{ 'property_' + item.element }}">
                     {{ item.label }}
                   </div>
@@ -579,7 +591,7 @@
               </ng-template>
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                   <div class="{{ 'property_' + item.element }}">
                     {{ item.label }}
                   </div>
@@ -594,7 +606,7 @@
       <div class="col-12" [hidden]="!model.weapon || !showLeftWeapon || !!model.shield">
         <app-equipment
           [itemType]="'leftWeapon'"
-          [placeholder]="'leftWeapon'"
+          [placeholder]="'Arma Esq.'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="leftWeaponList"
@@ -626,7 +638,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'weapon'"
-          [placeholder]="'Weapon'"
+          [placeholder]="'Arma'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="weaponList"
@@ -659,7 +671,7 @@
       <div class="col-12" [hidden]="!model.weapon || hiddenMap.shield || !!model.leftWeapon">
         <app-equipment
           [itemType]="'shield'"
-          [placeholder]="'Shield'"
+          [placeholder]="'Escudo'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="shieldList"
@@ -688,7 +700,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'headUpper'"
-          [placeholder]="'Upper'"
+          [placeholder]="'Topo'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="headUpperList"
@@ -715,7 +727,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'headUpper'"
-          [placeholder]="'Upper'"
+          [placeholder]="'Topo'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="headUpperList"
@@ -743,7 +755,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'headMiddle'"
-          [placeholder]="'Middle'"
+          [placeholder]="'Meio'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="headMiddleList"
@@ -769,7 +781,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'headMiddle'"
-          [placeholder]="'Middle'"
+          [placeholder]="'Meio'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="headMiddleList"
@@ -796,7 +808,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'headLower'"
-          [placeholder]="'Lower'"
+          [placeholder]="'Baixo'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="headLowerList"
@@ -817,7 +829,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'headLower'"
-          [placeholder]="'Lower'"
+          [placeholder]="'Baixo'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="headLowerList"
@@ -838,7 +850,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'armor'"
-          [placeholder]="'Armor'"
+          [placeholder]="'Armadura'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="armorList"
@@ -866,7 +878,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'armor'"
-          [placeholder]="'Armor'"
+          [placeholder]="'Armadura'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="armorList"
@@ -895,7 +907,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'garment'"
-          [placeholder]="'Garment'"
+          [placeholder]="'Capa'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="garmentList"
@@ -922,7 +934,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'garment'"
-          [placeholder]="'Garment'"
+          [placeholder]="'Capa'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="garmentList"
@@ -950,7 +962,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'boot'"
-          [placeholder]="'Boot'"
+          [placeholder]="'Botas'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="bootList"
@@ -974,7 +986,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'Boot'"
-          [placeholder]="'boot'"
+          [placeholder]="'Botas'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="bootList"
@@ -999,7 +1011,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'accRight'"
-          [placeholder]="'AccRight'"
+          [placeholder]="'Acess. Dir.'"
           [overlayLabel]="'Right'"
           [items]="items"
           [mapEnchant]="mapEnchant"
@@ -1027,7 +1039,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'accRight'"
-          [placeholder]="'AccRight'"
+          [placeholder]="'Acess. Dir.'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="accRightList"
@@ -1055,7 +1067,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'accLeft'"
-          [placeholder]="'AccLeft'"
+          [placeholder]="'Acess. Esq.'"
           [overlayLabel]="'Left'"
           [items]="items"
           [mapEnchant]="mapEnchant"
@@ -1082,7 +1094,7 @@
       <div class="col-12">
         <app-equipment
           [itemType]="'accLeft'"
-          [placeholder]="'AccLeft'"
+          [placeholder]="'Acess. Esq.'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="accLeftList"
@@ -1111,7 +1123,7 @@
         <div class="col-3">
           <app-equipment-cos-enchant
             [itemType]="'costumeUpper'"
-            [placeholder]="'Costume Upper'"
+            [placeholder]="'Visual Topo'"
             [itemList]="costumeUpperList"
             [(itemId)]="model.costumeUpper"
             (selectItemChange)="onSelectItem('costumeUpper', $event.itemId)"
@@ -1120,7 +1132,7 @@
         <div class="col-3">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantUpper'"
-            [placeholder]="'Upper Enchant'"
+            [placeholder]="'Encante Topo'"
             [itemList]="costumeEnhUpperList"
             [(itemId)]="model.costumeEnchantUpper"
             (selectItemChange)="onSelectItem('costumeEnchantUpper', $event.itemId)"
@@ -1143,13 +1155,13 @@
           >
             <ng-template let-item pTemplate="selectedItem">
               <div class="flex gap-1 item_template" *ngIf="model.pet">
-                <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+                <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
                 <div>{{ item.label }}</div>
               </div>
             </ng-template>
             <ng-template let-item pTemplate="item">
               <div class="flex gap-1">
-                <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                 <div>{{ item.label }}</div>
               </div>
             </ng-template>
@@ -1162,7 +1174,7 @@
         <div class="col-4">
           <app-equipment-cos-enchant
             [itemType]="'costumeMiddle'"
-            [placeholder]="'Costume Middle'"
+            [placeholder]="'Visual Meio'"
             [itemList]="costumeMiddleList"
             [(itemId)]="model.costumeMiddle"
             (selectItemChange)="onSelectItem('costumeMiddle', $event.itemId)"
@@ -1171,7 +1183,7 @@
         <div class="col-4">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantMiddle'"
-            [placeholder]="'Middle Enchant'"
+            [placeholder]="'Encante Meio'"
             [itemList]="costumeEnhMiddleList"
             [(itemId)]="model.costumeEnchantMiddle"
             (selectItemChange)="onSelectItem('costumeEnchantMiddle', $event.itemId)"
@@ -1184,7 +1196,7 @@
         <div class="col-4">
           <app-equipment-cos-enchant
             [itemType]="'costumeLower'"
-            [placeholder]="'Costume Lower'"
+            [placeholder]="'Visual Baixo'"
             [itemList]="costumeLowerList"
             [(itemId)]="model.costumeLower"
             (selectItemChange)="onSelectItem('costumeLower', $event.itemId)"
@@ -1193,7 +1205,7 @@
         <div class="col-4">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantLower'"
-            [placeholder]="'Lower Enchant'"
+            [placeholder]="'Encante Baixo'"
             [itemList]="costumeEnhLowerList"
             [(itemId)]="model.costumeEnchantLower"
             (selectItemChange)="onSelectItem('costumeEnchantLower', $event.itemId)"
@@ -1206,7 +1218,7 @@
         <div class="col-3">
           <app-equipment-cos-enchant
             [itemType]="'costumeGarment'"
-            [placeholder]="'Costume Garment'"
+            [placeholder]="'Visual Capa'"
             [itemList]="costumeGarmentList"
             [(itemId)]="model.costumeGarment"
             (selectItemChange)="onSelectItem('costumeGarment', $event.itemId)"
@@ -1215,7 +1227,7 @@
         <div class="col-3">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantGarment'"
-            [placeholder]="'Garment Enchant'"
+            [placeholder]="'Encante Capa'"
             [itemList]="costumeEnhGarmentList"
             [(itemId)]="model.costumeEnchantGarment"
             (selectItemChange)="onSelectItem('costumeEnchantGarment', $event.itemId)"
@@ -1224,7 +1236,7 @@
         <div class="col-3">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantGarment2'"
-            [placeholder]="'Garment Enchant 2'"
+            [placeholder]="'Encante Capa 2'"
             [itemList]="costumeEnhGarment2List"
             [(itemId)]="model.costumeEnchantGarment2"
             (selectItemChange)="onSelectItem('costumeEnchantGarment2', $event.itemId)"
@@ -1233,7 +1245,7 @@
         <div class="col-3">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantGarment4'"
-            [placeholder]="'Garment Enchant 4'"
+            [placeholder]="'Encante Capa 4'"
             [itemList]="costumeEnhGarment4List"
             [(itemId)]="model.costumeEnchantGarment4"
             (selectItemChange)="onSelectItem('costumeEnchantGarment4', $event.itemId)"
@@ -1245,7 +1257,7 @@
         <div class="col-4 item_label_compare" *ngIf="showCompareItemMap.costumeEnchantUpper">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantUpper'"
-            [placeholder]="'Upper Enchant'"
+            [placeholder]="'Encante Topo'"
             [itemList]="costumeEnhUpperList"
             [(itemId)]="model2.costumeEnchantUpper"
             (selectItemChange)="onCompareItemChange()"
@@ -1254,7 +1266,7 @@
         <div class="col-4 item_label_compare" *ngIf="showCompareItemMap.costumeEnchantMiddle">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantMiddle'"
-            [placeholder]="'Middle Enchant'"
+            [placeholder]="'Encante Meio'"
             [itemList]="costumeEnhMiddleList"
             [(itemId)]="model2.costumeEnchantMiddle"
             (selectItemChange)="onCompareItemChange()"
@@ -1263,7 +1275,7 @@
         <div class="col-4 item_label_compare" *ngIf="showCompareItemMap.costumeEnchantLower">
           <app-equipment-cos-enchant
             [itemType]="'costumeEnchantLower'"
-            [placeholder]="'Lower Enchant'"
+            [placeholder]="'Encante Baixo'"
             [itemList]="costumeEnhLowerList"
             [(itemId)]="model2.costumeEnchantLower"
             (selectItemChange)="onCompareItemChange()"
@@ -1273,7 +1285,7 @@
           <div class="col-4" *ngIf="showCompareItemMap.costumeEnchantGarment">
             <app-equipment-cos-enchant
               [itemType]="'costumeEnchantGarment'"
-              [placeholder]="'Garment Enchant'"
+              [placeholder]="'Encante Capa'"
               [itemList]="costumeEnhGarmentList"
               [(itemId)]="model2.costumeEnchantGarment"
               (selectItemChange)="onCompareItemChange()"
@@ -1282,7 +1294,7 @@
           <div class="col-4" *ngIf="showCompareItemMap.costumeEnchantGarment2">
             <app-equipment-cos-enchant
               [itemType]="'costumeEnchantGarment2'"
-              [placeholder]="'Garment Enchant 2'"
+              [placeholder]="'Encante Capa 2'"
               [itemList]="costumeEnhGarment2List"
               [(itemId)]="model2.costumeEnchantGarment2"
               (selectItemChange)="onCompareItemChange()"
@@ -1291,7 +1303,7 @@
           <div class="col-4" *ngIf="showCompareItemMap.costumeEnchantGarment4">
             <app-equipment-cos-enchant
               [itemType]="'costumeEnchantGarment4'"
-              [placeholder]="'Garment Enchant 4'"
+              [placeholder]="'Encante Capa 4'"
               [itemList]="costumeEnhGarment4List"
               [(itemId)]="model2.costumeEnchantGarment4"
               (selectItemChange)="onCompareItemChange()"
@@ -1308,7 +1320,7 @@
         <div class="col-12 item_label_shadow">
           <app-equipment-shadow
             [itemType]="'shadowWeapon'"
-            [placeholder]="'Shadow Weapon'"
+            [placeholder]="'Arma Sombria'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowWeaponList"
@@ -1329,7 +1341,7 @@
         <div class="col-12 item_label_shadow">
           <app-equipment-shadow
             [itemType]="'shadowShield'"
-            [placeholder]="'Shadow Shield'"
+            [placeholder]="'Escudo Sombrio'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowShieldList"
@@ -1350,7 +1362,7 @@
         <div class="col-12 item_label_shadow">
           <app-equipment-shadow
             [itemType]="'shadowArmor'"
-            [placeholder]="'Shadow Armor'"
+            [placeholder]="'Armadura Sombria'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowArmorList"
@@ -1371,7 +1383,7 @@
         <div class="col-12 item_label_shadow">
           <app-equipment-shadow
             [itemType]="'shadowBoot'"
-            [placeholder]="'Shadow Boot'"
+            [placeholder]="'Botas Sombrias'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowBootList"
@@ -1392,7 +1404,7 @@
         <div class="col-12 item_label_shadow">
           <app-equipment-shadow
             [itemType]="'shadowEarring'"
-            [placeholder]="'Shadow Earring'"
+            [placeholder]="'Brinco Sombrio'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowEarringList"
@@ -1413,7 +1425,7 @@
         <div class="col-12 item_label_shadow">
           <app-equipment-shadow
             [itemType]="'shadowPendant'"
-            [placeholder]="'Shadow Pendant'"
+            [placeholder]="'Pingente Sombrio'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowPendantList"
@@ -1433,7 +1445,7 @@
         <div class="col-12 item_label_compare" *ngIf="showCompareItemMap.shadowWeapon">
           <app-equipment-shadow
             [itemType]="'shadowWeapon'"
-            [placeholder]="'Shadow Weapon'"
+            [placeholder]="'Arma Sombria'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowWeaponList"
@@ -1451,7 +1463,7 @@
         <div class="col-12 item_label_compare" *ngIf="showCompareItemMap.shadowShield">
           <app-equipment-shadow
             [itemType]="'shadowShield'"
-            [placeholder]="'Shadow Shield'"
+            [placeholder]="'Escudo Sombrio'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowShieldList"
@@ -1469,7 +1481,7 @@
         <div class="col-12 item_label_compare" *ngIf="showCompareItemMap.shadowArmor">
           <app-equipment-shadow
             [itemType]="'shadowArmor'"
-            [placeholder]="'Shadow Armor'"
+            [placeholder]="'Armadura Sombria'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowArmorList"
@@ -1487,7 +1499,7 @@
         <div class="col-12 item_label_compare" *ngIf="showCompareItemMap.shadowBoot">
           <app-equipment-shadow
             [itemType]="'shadowBoot'"
-            [placeholder]="'Shadow Boot'"
+            [placeholder]="'Botas Sombrias'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowBootList"
@@ -1505,7 +1517,7 @@
         <div class="col-12 item_label_compare" *ngIf="showCompareItemMap.shadowEarring">
           <app-equipment-shadow
             [itemType]="'shadowEarring'"
-            [placeholder]="'Shadow Earring'"
+            [placeholder]="'Brinco Sombrio'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowEarringList"
@@ -1523,7 +1535,7 @@
         <div class="col-12 item_label_compare" *ngIf="showCompareItemMap.shadowPendant">
           <app-equipment-shadow
             [itemType]="'shadowPendant'"
-            [placeholder]="'Shadow Pendant'"
+            [placeholder]="'Pingente Sombrio'"
             [items]="items"
             [mapEnchant]="mapEnchant"
             [itemList]="shadowPendantList"
@@ -1545,14 +1557,14 @@
   <!-- Right Side -->
   <div class="p-fluid col-5">
     <p-accordion [multiple]="true" [activeIndex]="[2, 7]">
-      <p-accordionTab header="Consumables" class="consumable">
+      <p-accordionTab header="Consumíveis" class="consumable">
         <div class="grid grid-nogutter">
           <!-- Consumable -->
           <div class="col-4">
             <p-listbox [options]="consumableList" [(ngModel)]="model.consumables" [multiple]="true" [metaKeySelection]="false" (onChange)="onConsumableChange()">
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-2">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                   <div class="text_ellips">{{ item.label }}</div>
                 </div>
               </ng-template>
@@ -1565,7 +1577,7 @@
                 <p-listbox [options]="con" [(ngModel)]="model.consumables2[i]" [multiple]="false" [metaKeySelection]="false" (onChange)="onConsumableChange()">
                   <ng-template let-item pTemplate="item">
                     <div class="flex gap-2">
-                      <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                      <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                       <div class="text_ellips">{{ item.label }}</div>
                     </div>
                   </ng-template>
@@ -1580,7 +1592,7 @@
                 <p-listbox [options]="aspdPotionList" [(ngModel)]="model.aspdPotion" [multiple]="false" [metaKeySelection]="false" (onChange)="onConsumableChange()">
                   <ng-template let-item pTemplate="item">
                     <div class="flex gap-2">
-                      <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                      <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                       <div class="text_ellips">{{ item.label }}</div>
                     </div>
                   </ng-template>
@@ -1590,7 +1602,7 @@
                 <p-listbox [options]="aspdPotionList2" [(ngModel)]="model.aspdPotions" [multiple]="true" [metaKeySelection]="false" (onChange)="onConsumableChange()">
                   <ng-template let-item pTemplate="item">
                     <div class="flex gap-2">
-                      <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                      <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                       <div class="text_ellips">{{ item.label }}</div>
                     </div>
                   </ng-template>
@@ -1601,7 +1613,7 @@
         </div>
       </p-accordionTab>
 
-      <p-accordionTab header="Skills ***กดอัพสกิลด้วยนะ เพราะไอเทมบางชิ้นต้องอัพสกิลถึงจะได้ bonus" class="select_skill">
+      <p-accordionTab header="Habilidades *** lembre-se de subir as habilidades: alguns itens só dão bônus com a habilidade aprendida" class="select_skill">
         <div class="grid grid-nogutter">
           <!--  Buffs -->
           <div class="col-4">
@@ -1714,7 +1726,7 @@
         </div>
       </p-accordionTab>
 
-      <p-accordionTab header="Battle Summary">
+      <p-accordionTab header="Resumo de Batalha">
         <div class="grid grid-nogutter battle_summary">
           <div class="col-12" [hidden]="!chanceList?.length">
             <p-fieldset legend="Has a chance" [toggleable]="true">
@@ -1738,7 +1750,7 @@
             <div class="grid grid-nogutter">
               <div class="col-12">
                 <div class="p-inputgroup">
-                  <span class="p-inputgroup-addon monster_hilight_label">Monster</span>
+                  <span class="p-inputgroup-addon monster_hilight_label">Monstro</span>
                   <p-dropdown
                     inputId="monsterOpponent"
                     [autoDisplayFirst]="false"
@@ -1761,7 +1773,7 @@
                     type="button"
                     class="p-button-success"
                     pButton
-                    label="Choose Monster"
+                    label="Escolher Monstro"
                     [loading]="isInProcessingPreset"
                     (click)="onClickMonster()"
                   ></button> -->
@@ -1771,7 +1783,7 @@
               <div class="col-5 flex align-items-center justify-content-center">
                 <div class="grid grid-nogutter" style="height: 100%; width: 100%">
                   <div class="col-12 flex align-items-center justify-content-center">
-                    <img src="https://static.divine-pride.net/images/mobs/png/{{ selectedMonster }}.png" class="img_monster" alt="-" />
+                    <img [src]="selectedMonster | monsterSprite" class="img_monster" alt="-" />
                   </div>
                 </div>
               </div>
@@ -1790,7 +1802,7 @@
             <div class="grid grid-nogutter" style="position: relative">
               <div class="col-12 skill-selection" [hidden]="isShowSelectableSkillLevel">
                 <div class="p-inputgroup">
-                  <span class="p-inputgroup-addon skill_hilight_label">Skill</span>
+                  <span class="p-inputgroup-addon skill_hilight_label">Habilidade</span>
                   <p-dropdown
                     inputId="skill"
                     [autoDisplayFirst]="false"
@@ -1799,12 +1811,25 @@
                     scrollHeight="400px"
                     [(ngModel)]="model.selectedAtkSkill"
                     (onChange)="onAtkSkillChange()"
-                  ></p-dropdown>
+                  >
+                    <ng-template let-skill pTemplate="selectedItem">
+                      <div class="flex align-items-center gap-1">
+                        <img *ngIf="skill?.icon" [src]="skill.icon | iconUrl: 'skill'" alt="" class="skill_icon" />
+                        <span>{{ skill?.label }}</span>
+                      </div>
+                    </ng-template>
+                    <ng-template let-skill pTemplate="item">
+                      <div class="flex align-items-center gap-1">
+                        <img *ngIf="skill.icon" [src]="skill.icon | iconUrl: 'skill'" alt="" class="skill_icon" />
+                        <span>{{ skill.label }}</span>
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
                 </div>
               </div>
               <div class="col-12 skill-selection" [hidden]="!isShowSelectableSkillLevel">
                 <div class="p-inputgroup">
-                  <span class="p-inputgroup-addon skill_hilight_label">Skill</span>
+                  <span class="p-inputgroup-addon skill_hilight_label">Habilidade</span>
                   <p-cascadeSelect
                     inputId="skill"
                     [(ngModel)]="model.selectedAtkSkill"
@@ -1815,7 +1840,14 @@
                     [optionGroupChildren]="['levelList']"
                     placeholder="-"
                     (onChange)="onAtkSkillChange()"
-                  ></p-cascadeSelect>
+                  >
+                    <ng-template pTemplate="option" let-option>
+                      <div class="flex align-items-center gap-1">
+                        <img *ngIf="option?.icon" [src]="option.icon | iconUrl: 'skill'" alt="" class="skill_icon" />
+                        <span>{{ option.label }}</span>
+                      </div>
+                    </ng-template>
+                  </p-cascadeSelect>
                 </div>
               </div>
               <div class="col-12">
@@ -1858,7 +1890,7 @@
                       [showToggleAll]="false"
                       scrollHeight="400px"
                       selectedItemsLabel="{0} monsters selected"
-                      placeholder="Choose Monsters"
+                      placeholder="Escolher Monstros"
                       [maxSelectedLabels]="2"
                       (onChange)="onMonsterListChange()"
                       (onClear)="onMonsterListChange()"
@@ -1876,7 +1908,7 @@
                       [(ngModel)]="selectedColumns"
                       optionLabel="header"
                       selectedItemsLabel="{0} columns selected"
-                      placeholder="Choose Columns"
+                      placeholder="Escolher Colunas"
                       [maxSelectedLabels]="5"
                       (onChange)="onSelectedColChange()"
                       (onClear)="onSelectedColChange()"
@@ -1886,7 +1918,7 @@
               </ng-template>
               <ng-template pTemplate="header" let-columns>
                 <tr>
-                  <th>Name</th>
+                  <th>Nome</th>
                   <th *ngFor="let col of columns">
                     {{ col.header }}
                   </th>
@@ -1905,7 +1937,7 @@
         </div>
       </p-accordionTab>
 
-      <p-accordionTab header="Skill bonus / Multiplier Summary">
+      <p-accordionTab header="Bônus de Habilidade / Multiplicadores">
         <app-misc-detail
           [elementTable]="elementTable"
           [raceTable]="raceTable"
@@ -1915,11 +1947,11 @@
           [skillMultiplierTable]="skillMultiplierTable"
         ></app-misc-detail>
       </p-accordionTab>
-      <p-accordionTab header="Penetration Summary">
+      <p-accordionTab header="Resumo de Penetração">
         <app-misc-detail [elementTable]="[]" [raceTable]="peneRaceTable" [sizeTable]="[]" [classTable]="peneClassTable" [skillMultiplierTable]="[]"></app-misc-detail>
       </p-accordionTab>
 
-      <p-accordionTab header="Summary">
+      <p-accordionTab header="Resumo">
         <div class="grid grid-nogutter" style="overflow: auto">
           <div class="col-6 json_display">
             <pre [innerHTML]="modelSummary | prettyjson: [true, 3]"></pre>
@@ -1931,7 +1963,7 @@
         </div>
       </p-accordionTab>
 
-      <p-accordionTab header="Equipments Summary">
+      <p-accordionTab header="Resumo de Equipamentos">
         <div class="grid grid-nogutter">
           <div class="col-6 json_display">
             <pre [innerHTML]="itemSummary | prettyjson: [true, 3]"></pre>
@@ -1942,7 +1974,7 @@
         </div>
       </p-accordionTab>
 
-      <p-accordionTab header="Item Descriptions">
+      <p-accordionTab header="Descrições dos Itens">
         <div class="grid grid-nogutter">
           <div class="col-4">
             <div class="item_label_compare" *ngIf="isEnableCompare && equipCompareItems?.length">
@@ -1955,7 +1987,7 @@
               >
                 <ng-template let-item pTemplate="item">
                   <div class="flex gap-1 item_template">
-                    <img src="assets/demo/images/items/{{ item.id }}.png" alt="" class="item_img" />
+                    <img [src]="item.id | iconUrl: 'item'" alt="" class="item_img" />
                     <div class="text_ellips">
                       {{ item.label }}
                     </div>
@@ -1972,7 +2004,7 @@
             >
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1 item_template item_label_{{ item.value }}" style="background-color: var(--border-radius)">
-                  <img src="assets/demo/images/items/{{ item.id }}.png" alt="" class="item_img" />
+                  <img [src]="item.id | iconUrl: 'item'" alt="" class="item_img" />
                   <div class="text_ellips">
                     {{ item.label }}
                   </div>
@@ -1994,3 +2026,34 @@
     </p-accordion>
   </div>
 </div>
+
+<!-- Import build from a Ragnarok replay (.rrf) -->
+<p-dialog header="Importar Replay" [(visible)]="showReplayImport" [modal]="true" [dismissableMask]="true" [draggable]="false" [style]="{ width: '460px' }">
+  <div
+    class="replay-dropzone"
+    [class.dragover]="replayDragOver"
+    (dragover)="onReplayDragOver($event)"
+    (dragleave)="onReplayDragLeave($event)"
+    (drop)="onReplayDrop($event)"
+    (click)="replayInput.click()"
+  >
+    <i class="pi pi-upload replay-dropzone-icon"></i>
+    <p class="m-0">Arraste um arquivo <b>.rrf</b> aqui</p>
+    <p class="my-2 text-sm">ou</p>
+    <button
+      type="button"
+      pButton
+      class="p-button-sm p-button-outlined"
+      icon="pi pi-folder-open"
+      label="Selecionar arquivo"
+      (click)="$event.stopPropagation(); replayInput.click()"
+    ></button>
+    <input #replayInput type="file" accept=".rrf" hidden (change)="onReplayInputChange($event)" />
+  </div>
+  <div *ngIf="replayBusy" class="mt-3 text-center"><i class="pi pi-spin pi-spinner mr-2"></i>Lendo replay…</div>
+  <p class="mt-3 mb-0 text-sm" style="opacity: 0.7">
+    Importa classe, nível, atributos base (FOR/AGI/VIT/INT/DES/SOR) e equipamentos (refino, cartas e encantos) do replay.
+    <b>Talentos (POD/STA/SAB/FEI/CON/CRV) não são gravados no replay</b> — o jogo apenas exibe os da última sessão, então ajuste-os manualmente.
+    Bônus aleatórios não são lidos; itens fora do banco de dados são ignorados.
+  </p>
+</p-dialog>

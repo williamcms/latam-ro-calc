@@ -7,7 +7,7 @@
       <p-listbox [options]="allClasses" [(ngModel)]="selectedClassId" (onChange)="onSelectClassChange()" [disabled]="isLoading">
         <ng-template let-item pTemplate="item" class="py-0">
           <div class="flex gap-2 py-0">
-            <img src="assets/demo/images/jobs/icon_jobs_{{ item.icon }}.png" alt="" class="job_img" />
+            <img [src]="item.icon | iconUrl: 'job'" alt="" class="job_img" />
             <div class="text_ellips">{{ item.label }}</div>
           </div>
         </ng-template>
@@ -84,7 +84,7 @@
                       pButton
                       icon="pi pi-copy text-3xl"
                       class="p-button-text p-button-rounded p-button-warning"
-                      label="Copy"
+                      label="Copiar"
                       (click)="copyPreset(presetTag)"
                     ></button>
                   </div>
@@ -93,13 +93,13 @@
                 <div class="flex align-items-center">
                   <div class="flex ml-3">
                     <p-inputSwitch inputId="{{ presetTag.tagId }}" [(ngModel)]="viewDetail[presetTag.tagId]"></p-inputSwitch>
-                    <label class="mx-2" for="{{ presetTag.tagId }}">View detail</label>
+                    <label class="mx-2" for="{{ presetTag.tagId }}">Ver detalhes</label>
                   </div>
                   <div>
                     <button
                       pButton
                       type="button"
-                      label="Calculate"
+                      label="Calcular"
                       class="p-button-info"
                       [disabled]="isCalculating || isCalculated[presetTag.tagId]"
                       [loading]="isCalculating"
@@ -199,14 +199,14 @@
       </ng-template>
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td>Not found</td>
+          <td>Não encontrado</td>
         </tr>
       </ng-template>
     </p-table>
   </div>
   <div class="p-fluid col-3">
     <p-accordion [multiple]="true" [activeIndex]="[0]">
-      <p-accordionTab header="Battle Summary">
+      <p-accordionTab header="Resumo de Batalha">
         <div class="grid grid-nogutter battle_summary">
           <!-- Monster -->
           <div class="col-12">
@@ -401,7 +401,7 @@
               <div class="col-6">
                 <app-calc-value
                   [enableCompare]="false"
-                  label="เจาะ:"
+                  label="Pen.:"
                   unit="%"
                   styleClass="summary_highlight"
                   styleClass2="summary_compare"
@@ -411,7 +411,7 @@
               <div class="col-6">
                 <app-calc-value
                   [enableCompare]="false"
-                  label="แม่น:"
+                  label="Prec.:"
                   unit="%"
                   styleClass="summary_highlight"
                   styleClass2="summary_compare"

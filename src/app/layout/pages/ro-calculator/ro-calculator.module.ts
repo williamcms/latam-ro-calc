@@ -47,6 +47,9 @@ import { BattleDmgSummaryComponent } from './battle-dmg-summary/battle-dmg-summa
 import { BattleMonsterSummaryComponent } from './battle-monster-summary/battle-monster-summary.component';
 import { EquipmentCosEnchantComponent } from './equipment-cos-enchant/equipment-cos-enchant.component';
 import { StatusInputComponent } from './status-input/status-input.component';
+import { IconUrlPipe } from '../../../pipes/icon-url.pipe';
+import { MonsterSpritePipe } from '../../../pipes/monster-sprite.pipe';
+import { MonsterTermPipe } from '../../../pipes/monster-term.pipe';
 
 @NgModule({
   imports: [
@@ -82,6 +85,9 @@ import { StatusInputComponent } from './status-input/status-input.component';
     FieldsetModule,
     DialogModule,
     RoCalculatorRoutingModule,
+    IconUrlPipe,
+    MonsterSpritePipe,
+    MonsterTermPipe,
   ],
   declarations: [
     RoCalculatorComponent,

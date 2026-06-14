@@ -5,7 +5,7 @@
   style="position: fixed; top: 42%; z-index: 999; right: 0"
 >
   <i class="pi pi-search"></i>
-  <div class="pl-1">Items</div>
+  <div class="pl-1">Itens</div>
 </button>
 <p-dialog
   header="{{ selectedCharacter?.className }}"
@@ -42,7 +42,7 @@
             optionGroupLabel="label"
             optionLabel="label"
             [optionGroupChildren]="['children', 'children']"
-            placeholder="Bonus 1"
+            placeholder="Bônus 1"
             [showClear]="true"
           ></p-cascadeSelect>
         </div>
@@ -54,7 +54,7 @@
             optionGroupLabel="label"
             optionLabel="label"
             [optionGroupChildren]="['children', 'children']"
-            placeholder="Bonus 2"
+            placeholder="Bônus 2"
             [showClear]="true"
           ></p-cascadeSelect>
         </div>
@@ -66,7 +66,7 @@
             optionGroupLabel="label"
             optionLabel="label"
             [optionGroupChildren]="['children', 'children']"
-            placeholder="Bonus 3"
+            placeholder="Bônus 3"
             [showClear]="true"
           ></p-cascadeSelect>
         </div>
@@ -78,7 +78,7 @@
             optionGroupLabel="label"
             optionLabel="label"
             [optionGroupChildren]="['children', 'children']"
-            placeholder="Bonus 4"
+            placeholder="Bônus 4"
             [showClear]="true"
           ></p-cascadeSelect>
         </div>
@@ -130,7 +130,7 @@
                 class="flex gap-1 item_template item_label_{{ item.value }}"
                 style="background-color: var(--border-radius)"
               >
-                <img src="assets/demo/images/items/{{ item.id }}.png" alt="" class="item_img" />
+                <img [src]="item.id | iconUrl: 'item'" alt="" class="item_img" />
                 <div class="text_ellips">
                   {{ item.label }}
                 </div>

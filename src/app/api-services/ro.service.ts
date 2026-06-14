@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as yaml from 'js-yaml';
-import { Observable, map, shareReplay, tap } from 'rxjs';
+import { Observable, forkJoin, map, shareReplay, tap } from 'rxjs';
 import { createRawTotalBonus } from 'src/app/utils';
 import { environment } from 'src/environments/environment';
 import { OFFENSIVE_SKILL_NAMES } from '../constants/skill-name';
@@ -28,11 +28,44 @@ export class RoService {
   private cachedMonster$: Observable<any>;
   private cachedItems$: Observable<any>;
   private cachedHpSpTable$: Observable<any>;
+  private cachedLatamClasses$: Observable<number[]>;
+  private cachedLatamSkills$: Observable<Record<string, { id: number; name: string }>>;
   private _isFirst = true;
 
   constructor(private http: HttpClient) {
-    this.cachedMonster$ = this.http.get<any>('assets/demo/data/monster.json').pipe(shareReplay(1));
-    this.cachedItems$ = this.http.get<any>('assets/demo/data/item.json').pipe(
+    this.cachedMonster$ = forkJoin({
+      monsters: this.http.get<any>('assets/demo/data/monster.json'),
+      // pt-BR monster names from ragreplaystats' Divine Pride scrape
+      // (tools/build-latam-monsters.mjs).
+      latam: this.http.get<Record<string, string>>('assets/demo/data/latam-monsters.json'),
+    }).pipe(
+      map(({ monsters, latam }) => {
+        for (const id of Object.keys(monsters)) {
+          const pt = latam[id];
+          if (pt) monsters[id].name = pt;
+        }
+        return monsters;
+      }),
+      shareReplay(1),
+    );
+    this.cachedItems$ = forkJoin({
+      items: this.http.get<any>('assets/demo/data/item.json'),
+      // LATAM overlay: pt-BR name/description + the "present in LATAM" set,
+      // extracted from the client by tools/build-latam-db.mjs.
+      latam: this.http.get<Record<string, { name: string; description?: string }>>('assets/demo/data/latam-items.json'),
+    }).pipe(
+      map(({ items, latam }) => {
+        for (const id of Object.keys(items)) {
+          const item = items[id];
+          const pt = latam[id];
+          item.presentInLatam = !!pt;
+          if (pt) {
+            item.name = pt.name;
+            if (pt.description) item.description = pt.description;
+          }
+        }
+        return items;
+      }),
       shareReplay(1),
       tap((items) => {
         if (!this._isFirst || environment.production) return;
@@ -86,6 +119,13 @@ export class RoService {
       }),
     );
     this.cachedHpSpTable$ = this.http.get<any>('assets/demo/data/hp_sp_table.json').pipe(shareReplay(1));
+    // Job-icon ids present in the LATAM client GRF (from tools/build-latam-db.mjs);
+    // classes whose icon isn't here are unreleased on LATAM and hidden in the UI.
+    this.cachedLatamClasses$ = this.http.get<number[]>('assets/demo/data/latam-classes.json').pipe(shareReplay(1));
+    // English skill name -> { id, pt-BR name } (from tools/build-latam-skills.mjs).
+    this.cachedLatamSkills$ = this.http
+      .get<Record<string, { id: number; name: string }>>('assets/demo/data/latam-skills.json')
+      .pipe(shareReplay(1));
 
     // this.doX();
     // this.generateHpSp()
@@ -101,6 +141,14 @@ export class RoService {
 
   getHpSpTable<T>(): Observable<T> {
     return this.cachedHpSpTable$;
+  }
+
+  getLatamClasses(): Observable<number[]> {
+    return this.cachedLatamClasses$;
+  }
+
+  getLatamSkills(): Observable<Record<string, { id: number; name: string }>> {
+    return this.cachedLatamSkills$;
   }
 
   private generateHpSp() {

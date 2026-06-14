@@ -8,7 +8,7 @@
   [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'"
   styleClass="layout-config-sidebar w-20rem"
 >
-  <h5>Scale</h5>
+  <h5>Escala</h5>
   <div class="flex align-items-center">
     <button
       icon="pi pi-minus"
@@ -36,19 +36,19 @@
   </div>
 
   <!-- <ng-container *ngIf="!minimal">
-        <h5>Menu Type</h5>
+        <h5>Tipo de Menu</h5>
         <div class="field-radiobutton">
             <p-radioButton name="menuMode" value="static" [(ngModel)]="menuMode" inputId="mode1"></p-radioButton>
-            <label for="mode1">Static</label>
+            <label for="mode1">Estático</label>
         </div>
         <div class="field-radiobutton">
             <p-radioButton name="menuMode" value="overlay" [(ngModel)]="menuMode" inputId="mode2"></p-radioButton>
-            <label for="mode2">Overlay</label>
+            <label for="mode2">Sobreposição</label>
         </div>
     </ng-container> -->
 
   <ng-container *ngIf="!isProd || !minimal">
-    <h5>Input Style</h5>
+    <h5>Estilo de Campo</h5>
     <div class="flex">
       <div class="field-radiobutton flex-1">
         <p-radioButton
@@ -57,17 +57,17 @@
           [(ngModel)]="inputStyle"
           inputId="outlined_input"
         ></p-radioButton>
-        <label for="outlined_input">Outlined</label>
+        <label for="outlined_input">Contornado</label>
       </div>
       <div class="field-radiobutton flex-1">
         <p-radioButton name="inputStyle" value="filled" [(ngModel)]="inputStyle" inputId="filled_input"></p-radioButton>
-        <label for="filled_input">Filled</label>
+        <label for="filled_input">Preenchido</label>
       </div>
     </div>
 
-    <h5 *ngIf="!env.production">Ripple Effect</h5>
+    <h5 *ngIf="!env.production">Efeito Cascata</h5>
     <p-inputSwitch *ngIf="!env.production" [(ngModel)]="ripple"></p-inputSwitch>
-    <h5>Hide Basic Atk</h5>
+    <h5>Ocultar Ataque Básico</h5>
     <p-inputSwitch [(ngModel)]="hideBasicAtk"></p-inputSwitch>
   </ng-container>
 

@@ -30,6 +30,8 @@ export interface AtkSkillModel {
   label: string;
   name: typeof OFFENSIVE_SKILL_NAMES[number];
   value: string;
+  /** ragassets skill-icon id, attached at runtime from the LATAM skill map. */
+  icon?: number;
   values?: string[];
   acd: number | ((skillLevel: number) => number);
   fct: number | ((skillLevel: number) => number);
@@ -213,79 +215,6 @@ export abstract class CharacterBase {
 
   get atkSkills() {
     const skills: AtkSkillModel[] = [...this._atkSkillList];
-
-    const cName = this.className;
-    if (cName !== ClassName.RuneKnight && cName !== ClassName.DragonKnight) {
-      skills.push({
-        name: 'Wind Cutter',
-        label: 'Wind Cutter Lv5',
-        value: 'Wind Cutter==5',
-        acd: 0.5,
-        fct: 0,
-        vct: 0,
-        cd: 0.3,
-        isMelee: (weaponType) => weaponType !== 'spear' && weaponType !== 'twohandSpear',
-        formula: (input: AtkSkillFormulaInput): number => {
-          const { model, skillLevel, weapon } = input;
-          const wTypeName = weapon.data.typeName;
-          const baseLevel = model.level;
-
-          let baseDamage = 0;
-          if (wTypeName === 'twohandSword') {
-            baseDamage = 250 * skillLevel * 2;
-          } else if (wTypeName === 'spear' || wTypeName === 'twohandSpear') {
-            baseDamage = 400 * skillLevel;
-          } else {
-            baseDamage = 300 * skillLevel;
-          }
-
-          return baseDamage * (baseLevel / 100);
-        },
-      });
-    }
-    if (cName !== ClassName.ArchBishop && cName !== ClassName.Cardinal) {
-      skills.push({
-        name: 'Adoramus',
-        label: 'Adoramus Lv6',
-        value: 'Adoramus==6',
-        fct: 0.5,
-        vct: 2,
-        acd: 0.5,
-        cd: 2.5,
-        isMatk: true,
-        hit: 10,
-        element: ElementType.Holy,
-        formula: (input: AtkSkillFormulaInput): number => {
-          const { model, skillLevel } = input;
-          const baseLevel = model.level;
-
-          return (300 + skillLevel * 250) * (baseLevel / 100);
-        },
-      });
-    }
-    if (cName !== ClassName.Warlock && cName !== ClassName.ArchMage) {
-      skills.push({
-        name: 'Napalm Vulcan',
-        label: 'Napalm Vulcan Lv4',
-        value: 'Napalm Vulcan==4',
-        fct: 0.3,
-        vct: 0.5,
-        acd: 0.5,
-        cd: 1,
-        isMatk: true,
-        element: ElementType.Ghost,
-        hit: 4,
-        formula: (input: AtkSkillFormulaInput): number => {
-          const { model, skillLevel } = input;
-          const baseLevel = model.level;
-
-          return skillLevel * 70 * (baseLevel / 100);
-        },
-        finalDmgFormula: (input) => {
-          return input.damage * input.skillLevel;
-        },
-      });
-    }
 
     if (environment.production) {
       return skills.filter((a) => !a.isDevMode);

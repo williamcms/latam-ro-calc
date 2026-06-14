@@ -46,8 +46,10 @@ import {
   verifySyncPreset,
   waitRxjs,
 } from 'src/app/utils';
+import { importReplayBuffer } from '../../../replay/replay-to-model';
 import { environment } from 'src/environments/environment';
 import { getClassDropdownList } from '../../../jobs/_class-list';
+import { racePtBr, sizePtBr, elementPtBr } from '../../../constants/monster-i18n';
 import { ChanceModel } from '../../../models/chance-model';
 import { BasicDamageSummaryModel, SkillDamageSummaryModel } from '../../../models/damage-summary.model';
 import { DropdownModel, ItemDropdownModel } from '../../../models/dropdown.model';
@@ -310,7 +312,13 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   readonly hideHpSp = HideHpSp;
 
   equipableItems: (DropdownModel & { id: number; position: string; })[] = [];
-  offensiveSkills: DropdownModel[] = [];
+  offensiveSkills: (DropdownModel & { icon?: number })[] = [];
+  latamSkills: Record<string, { id: number; name: string }> = {};
+
+  // --- Replay (.rrf) import modal ---
+  showReplayImport = false;
+  replayDragOver = false;
+  replayBusy = false;
 
   onClassChangedSubject = new Subject<boolean>();
   onClassChanged$ = this.onClassChangedSubject.asObservable();
@@ -541,11 +549,18 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       this.roService.getItems<Record<number, ItemModel>>(),
       this.roService.getMonsters<Record<number, MonsterModel>>(),
       this.roService.getHpSpTable<HpSpTable>(),
+      this.roService.getLatamClasses(),
+      this.roService.getLatamSkills(),
     ]).pipe(
-      tap(([items, monsters, hpSpTable]) => {
+      tap(([items, monsters, hpSpTable, latamClasses, latamSkills]) => {
         this.items = items;
         this.monsterDataMap = monsters;
         this.hpSpTable = hpSpTable;
+        this.latamSkills = latamSkills;
+
+        // Hide classes unreleased on LATAM (no job icon in the client GRF).
+        const latamClassSet = new Set(latamClasses);
+        this.characterList = Characters.filter((c) => latamClassSet.has(c.icon));
 
         this.selectedMonsterName = this.monsterDataMap[this.selectedMonster]?.name;
 
@@ -1015,7 +1030,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
 
       return {
         id,
-        label: `${level} ${name} (${raceName}, ${scaleName.at(0)}, ${elementName})`,
+        label: `${level} ${name} (${racePtBr(raceName)}, ${sizePtBr(scaleName).at(0)}, ${elementPtBr(elementName)})`,
         health,
         monsterClass: classMap[_class],
         elementName: elementShortName,
@@ -1509,6 +1524,83 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     localStorage.setItem('ro-set', JSON.stringify(toUpsertPresetModel(this.model, this.selectedCharacter)));
   }
 
+  // --- Import build from a Ragnarok replay (.rrf) -------------------------
+  openReplayImport() {
+    this.showReplayImport = true;
+  }
+
+  onReplayDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.replayDragOver = true;
+  }
+
+  onReplayDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.replayDragOver = false;
+  }
+
+  onReplayDrop(event: DragEvent) {
+    event.preventDefault();
+    this.replayDragOver = false;
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.importReplay(file);
+  }
+
+  onReplayInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.importReplay(file);
+    input.value = ''; // allow re-picking the same file
+  }
+
+  async importReplay(file: File) {
+    if (this.replayBusy) return;
+    this.replayBusy = true;
+    try {
+      const buf = await file.arrayBuffer();
+      const { model, summary } = importReplayBuffer(buf, this.items);
+      // The calculator only carries the advanced LATAM classes; bail out cleanly
+      // (keeping the current build) if the replay's class isn't one of them.
+      if (!this.characterList?.some((c) => c.value === model.class)) {
+        this.replayBusy = false;
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Classe indisponível',
+          detail: `A classe deste replay (${summary.player || 'personagem'}, job ${model.class}) não está disponível na calculadora.`,
+          life: 7000,
+        });
+        return;
+      }
+      this.loadItemSet(model as any).subscribe({
+        complete: () => {
+          // Switching to a class with a different level range can leave the
+          // level/job dropdowns holding a momentarily out-of-range value; re-assert
+          // the replay's levels and recompute once everything has settled.
+          if (summary.baseLevel) this.model.level = summary.baseLevel;
+          if (summary.jobLevel) this.model.jobLevel = summary.jobLevel;
+          this.onBaseStatusChange();
+          this.replayBusy = false;
+          this.showReplayImport = false;
+          const skipped = summary.skippedItems.length;
+          const detail =
+            `${summary.player || 'Personagem'} — nível ${summary.baseLevel}, ${summary.equippedCount} equipamentos` +
+            (skipped ? `, ${skipped} ignorado(s) (fora do banco de dados)` : '') +
+            '. ⚠️ Talentos (POD/STA/SAB/FEI/CON/CRV) não são gravados no replay — ajuste-os manualmente.';
+          this.messageService.add({ severity: 'success', summary: 'Replay importado', detail, life: 9000 });
+        },
+        error: (err) => {
+          this.replayBusy = false;
+          console.error(err);
+          this.messageService.add({ severity: 'error', summary: 'Falha ao importar', detail: 'Erro ao aplicar o replay.' });
+        },
+      });
+    } catch (e) {
+      this.replayBusy = false;
+      console.error(e);
+      this.messageService.add({ severity: 'error', summary: 'Arquivo inválido', detail: 'Não foi possível ler o arquivo .rrf.' });
+    }
+  }
+
   private resetItemDescription() {
     const equipItemTypes: string[] = [];
     const map = new Map<ItemTypeEnum, number>();
@@ -1567,17 +1659,26 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     this.isAllowLeftWeaponByClass = AllowLeftWeaponMapper[this.selectedCharacter.className] || false;
   }
 
+  /** Resolve a calc skill name to its LATAM { id, pt-BR name }. The id is baked
+   *  per skill at build time (tools/build-latam-skills.mjs -> latam-skills.json),
+   *  keyed by the calc's own skill name, so this is a direct exact lookup. */
+  private resolveSkill(name: string): { id: number; name: string } | undefined {
+    return this.latamSkills[name];
+  }
+
   private setClassSkill() {
     this.activeSkills = this.selectedCharacter.activeSkills;
     this.passiveSkills = this.selectedCharacter.passiveSkills;
-    this.atkSkills = this.selectedCharacter.atkSkills;
-    this.offensiveSkills = [...new Set(this.atkSkills.map((a) => a.name)).values()].map((name) => {
-      return {
-        label: name,
-        value: name,
-      };
+    // Overlay pt-BR skill names + ragassets skill-icon id (from the GRF skill map).
+    this.atkSkills = this.selectedCharacter.atkSkills.map((a) => {
+      const pt = this.resolveSkill(a.name);
+      return pt ? { ...a, label: pt.name, icon: pt.id } : a;
     });
-    this.atkSkillCascades = this.selectedCharacter.atkSkills;
+    this.offensiveSkills = [...new Set(this.selectedCharacter.atkSkills.map((a) => a.name)).values()].map((name) => {
+      const pt = this.resolveSkill(name);
+      return { label: pt?.name ?? name, value: name, icon: pt?.id };
+    });
+    this.atkSkillCascades = this.atkSkills;
     this.isShowSelectableSkillLevel = this.selectedCharacter.atkSkills.some((a) => a.levelList?.length > 0);
   }
 
@@ -1735,7 +1836,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       const spawnMap = mvp === 1 ? ' Boss' : getMonsterSpawnMap(spawn) || (_class === 1 ? ' Boss' : 'Etc');
       const group = groupMap.get(spawnMap);
       const monster: DropdownModel = {
-        label: `${level} ${name} (${raceName} ${scaleName.at(0)})`,
+        label: `${level} ${name} (${racePtBr(raceName)} ${sizePtBr(scaleName).at(0)})`,
         name,
         value: id,
         level,
@@ -1812,7 +1913,12 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
 
     const consumableList: ItemModel[] = [];
 
-    const sortedItems = Object.values(this.items).sort(sortObj('name'));
+    // Only show items that exist on the LATAM server (flagged by RoService from
+    // the GRF extract). Non-LATAM items stay in the map for id lookups but are
+    // hidden from the selection dropdowns.
+    const sortedItems = Object.values(this.items)
+      .filter((item: any) => item.presentInLatam)
+      .sort(sortObj('name'));
     for (const item of sortedItems) {
       const { itemTypeId, itemSubTypeId, compositionPos, location } = item;
 

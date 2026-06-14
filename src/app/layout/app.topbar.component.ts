@@ -16,7 +16,7 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
   activeItem: MenuItem | undefined;
   items: MenuItem[] = [
     {
-      label: 'Calculator',
+      label: 'Calculadora',
       icon: 'pi pi-fw pi-home',
       routerLink: ['/'],
       routerLinkActiveOptions: {
@@ -24,12 +24,12 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
       },
     },
     {
-      label: 'Shared Presets',
+      label: 'Predefinições Compartilhadas',
       icon: 'pi pi-fw pi-list',
       routerLink: ['/shared-presets'],
     },
     {
-      label: 'Item Ranking',
+      label: 'Ranking de Itens',
       icon: 'pi pi-fw pi-sort-amount-down',
       routerLink: ['/preset-summary'],
       isNew: true,
@@ -42,23 +42,22 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
 
   @ViewChild('topbarmenu') menu!: ElementRef;
 
-  visible: boolean = false;
   visibleInfo: boolean = false;
   visibleReference = false;
   env = environment;
 
   infos = [
-    'ข้อมูลไอเทม มอนสเตอร์ และสกิล ทั้งหมดมาจากเว็บ "divine-pride"',
-    'เปลี่ยน Theme ทึ่ปุ่ม Config ตรงขวากลาง',
-    'ข้อมูลที่บันทึกไว้จะถูกเก็บไว้ที่ browser, ถ้าล้างข้อมูล browser ก็จะถูกลบไปด้วย',
-    'เงื่อนไขที่เขียนไว้ว่า "ทุกๆการเรียนรู้สกิล" ต้องกดอัพในช่อง "Learn to get bonuses" ถึงจะได้ bonus, ถ้าไม่มีให้อัพจะให้เป็น bonus เป็น Lv MAX',
-    'options ในแถวอาวุธจะอยู่ตลอด สามารถใช้เป็น What if ได้',
-    'My Magical Element ใน options = เพิ่ม Damage ทางเวทมนตร์ธาตุ ...',
-    'การเปรียบเทียบอาวุธ 2 มือยังไม่รองรับการเปลี่ยนมือซ้าย',
-    'Job 61-64, 66-69 จะได้ Bonus ไม่ตรงเพราะไม่มีข้อมูล',
-    'Tab "Summary" คือ ใส่อะไรบ้าง/อัพสกิลอะไรบ้าง/การคำนวนทั้งหมด',
-    'Tab "Equipments Summary" คือ bonus ของไอเทมแบบภาพรวม',
-    'Tab "Item Descriptions" คือ bonus ของไอเทมแต่ละชิ้นและคำอธิบาย (เอาไว้ตรวจสอบว่าได้ bonus ถูกไหม)',
+    'Todos os dados de itens, monstros e habilidades vêm do site "divine-pride".',
+    'Mude o tema pelo botão Config, no centro à direita.',
+    'Os dados salvos ficam no navegador; se você limpar os dados do navegador, eles também serão apagados.',
+    'Condições que dizem "a cada nível de habilidade aprendido" exigem subir o nível no campo "Learn to get bonuses" para receber o bônus; se não houver onde subir, o bônus é contado como Lv MÁX.',
+    'As opções na linha da arma ficam sempre disponíveis e podem ser usadas como "e se" (What if).',
+    'My Magical Element nas opções = aumenta o dano mágico do elemento...',
+    'A comparação de armas de duas mãos ainda não suporta troca da mão esquerda.',
+    'Os jobs 61-64 e 66-69 recebem bônus imprecisos por falta de dados.',
+    'A aba "Summary" mostra o que foi equipado / quais habilidades foram subidas / todos os cálculos.',
+    'A aba "Equipments Summary" mostra um resumo geral dos bônus dos itens.',
+    'A aba "Item Descriptions" mostra os bônus e a descrição de cada item (para conferir se os bônus estão corretos).',
   ];
 
   references: { label: string; link: string; writer: string; date?: string; }[] = [
@@ -1057,7 +1056,8 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
   unreadVersion = this.updates.findIndex((a) => a.v === this.localVersion);
   showUnreadVersion = this.unreadVersion === -1 ? this.updates.length + 1 : this.unreadVersion;
 
-  visibleUpdate = this.lastestVersion !== this.localVersion;
+  // Don't auto-open the changelog on load; it's still reachable via the "what's new" button.
+  visibleUpdate = false;
 
   username: string;
 
@@ -1084,19 +1084,15 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.waitConfirm('Logout ?').then((isConfirm) => {
+    this.waitConfirm('Sair?').then((isConfirm) => {
       if (!isConfirm) return;
 
       this.authService.logout();
       this.messageService.add({
         severity: 'success',
-        summary: 'Logout',
+        summary: 'Você saiu',
       });
     });
-  }
-
-  showDialog() {
-    this.visible = true;
   }
 
   showUpdateDialog() {
@@ -1130,7 +1126,7 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
     return new Promise((res) => {
       this.confirmationService.confirm({
         message: message,
-        header: 'Confirmation',
+        header: 'Confirmação',
         icon: icon || 'pi pi-exclamation-triangle',
         accept: () => {
           res(true);

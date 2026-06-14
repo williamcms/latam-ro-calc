@@ -767,6 +767,13 @@ export const EnchantTable: EntTable[] = [
   { name: 'Illusion_Shield_A', enchants: [null, illusionShield, illusionShield, illusionShield] },
   { name: 'Illusion_Shield_B', enchants: [null, illusionShield, illusionShield, illusionShield] },
 
+  // [Apoio]/bound "E_" Illusion pieces: same enchant pools as their base
+  // counterparts. Required so replay/preset imports render their socket-enchants
+  // — getEnchants() matches by exact aegisName, and the E_ prefix has no base entry.
+  { name: 'E_Illusion_Armor_A', enchants: [null, illusionArmor, illusionArmor, illusionArmor] },
+  { name: 'E_Illusion_Engine_B', enchants: [null, illusionGarment, illusionGarment, illusionGarment] },
+  { name: 'E_Illusion_Leg_A', enchants: [null, illusionBoot, illusionBoot, illusionBoot] },
+
   { name: '[Upgrade] Illusion Ring [1]', enchants: [null, illusionAcc, illusionAcc, illusionAcc] },
   { name: 'Secret Illusion Ring [1]', enchants: [null, ['Improve_Orb_L_Varmundt', ...illusionAcc], illusionAcc, illusionAcc] },
 

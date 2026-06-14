@@ -4,7 +4,7 @@
       <p-listbox [options]="allClasses" [(ngModel)]="selectedJobId" (onChange)="onJobChange()" [disabled]="isLoading">
         <ng-template let-item pTemplate="item" class="py-0">
           <div class="flex gap-2 py-0">
-            <img src="assets/demo/images/jobs/icon_jobs_{{ item.icon }}.png" alt="" class="job_img" />
+            <img [src]="item.icon | iconUrl: 'job'" alt="" class="job_img" />
             <div class="text_ellips">{{ item.label }}</div>
           </div>
         </ng-template>
@@ -34,10 +34,10 @@
         </ng-template>
       </p-listbox>
       <div class="card px-1 py-3 sticky desc-sticky">
-        <div class="text-lg font-bold mb-3">Item Description</div>
+        <div class="text-lg font-bold mb-3">Descrição do Item</div>
         <div class="mb-4" *ngFor="let selectedItem of displaySelectedItems">
           <div class="flex gap-1 mb-2" *ngIf="selectedItemId">
-            <img src="assets/demo/images/items/{{ selectedItem.id }}.png" alt="" class="item_img" />
+            <img [src]="selectedItem.id | iconUrl: 'item'" alt="" class="item_img" />
             <div class="text_ellips font-medium">
               {{ selectedItem.name }}
             </div>
@@ -53,14 +53,14 @@
             {{ position }}
           </div>
           <div *ngIf="isItemHasEnchant[position]">
-            <p-checkbox [(ngModel)]="isShowEnchant[position]" [binary]="true" label="Show enchant" (ngModelChange)="onToggleShowEnchantClick(position)"></p-checkbox>
+            <p-checkbox [(ngModel)]="isShowEnchant[position]" [binary]="true" label="Mostrar encante" (ngModelChange)="onToggleShowEnchantClick(position)"></p-checkbox>
           </div>
         </div>
         <p-listbox [options]="rankingMap[position]" [(ngModel)]="selectedItemId" (onChange)="onItemChange()" optionValue="ItemId">
           <ng-template let-rank pTemplate="item" styleClass="py-0 xxx">
             <div *ngIf="!rank.IsEnchant" class="flex w-full justify-content-between">
               <div class="flex gap-1" *ngIf="rank.ItemId">
-                <img src="assets/demo/images/items/{{ rank.ItemId }}.png" alt="" class="item_img" />
+                <img [src]="rank.ItemId | iconUrl: 'item'" alt="" class="item_img" />
                 <div class="text_ellips font-medium">
                   {{ rank.ItemName }}
                 </div>
@@ -76,7 +76,7 @@
             <div *ngIf="rank.IsEnchant" class="flex pl-4 w-full justify-content-between">
               <div class="flex gap-2 w-full">
                 <div class="flex gap-1 {{ rank.EnchantInfos.length === 3 ? 'item_enchant' : '' }}" *ngFor="let enchant of rank.EnchantInfos">
-                  <img src="assets/demo/images/items/{{ enchant.id }}.png" alt="" class="item_img" />
+                  <img [src]="enchant.id | iconUrl: 'item'" alt="" class="item_img" />
                   <div>{{ enchant.name }}</div>
                 </div>
               </div>

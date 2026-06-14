@@ -4,25 +4,25 @@ import { ElementType } from './element-type.const';
 export const ElementConverterList: DropdownModel[] = [
   {
     img: '12114',
-    label: 'Fire',
+    label: 'Fogo',
     value: ElementType.Fire,
     element: ElementType.Fire,
   },
   {
     img: '12115',
-    label: 'Water',
+    label: 'Água',
     value: ElementType.Water,
     element: ElementType.Water,
   },
   {
     img: '12116',
-    label: 'Earth',
+    label: 'Terra',
     value: ElementType.Earth,
     element: ElementType.Earth,
   },
   {
     img: '12117',
-    label: 'Wind',
+    label: 'Vento',
     value: ElementType.Wind,
     element: ElementType.Wind,
   },
@@ -40,7 +40,7 @@ export const ElementConverterList: DropdownModel[] = [
   },
   {
     img: '12020',
-    label: 'Cursed Water',
+    label: 'Água Amaldiçoada',
     value: ElementType.Dark,
     element: ElementType.Dark,
   },

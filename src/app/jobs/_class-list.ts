@@ -1,6 +1,6 @@
 import { DropdownModel } from '../models/dropdown.model';
 import { CharacterBase } from './_character-base.abstract';
-import { ClassID, ClassIcon } from './_class-name';
+import { ClassID, ClassIcon, ClassNamePtBr } from './_class-name';
 import { AbyssChaser } from './AbyssChaser';
 import { ArchBishop } from './ArchBishop';
 import { ArchMage } from './ArchMage';
@@ -42,7 +42,7 @@ import { Wanderer } from './Wanderer';
 import { Warlock } from './Warlock';
 import { Windhawk } from './Windhawk';
 
-const toClassItem = (id: number) => ({ label: ClassID[id], value: id, icon: ClassIcon[id] });
+const toClassItem = (id: number) => ({ label: ClassNamePtBr[id] ?? ClassID[id], value: id, icon: ClassIcon[id] });
 
 export const getClassDropdownList = (): (DropdownModel & { icon: number; instant: CharacterBase })[] => {
   return [

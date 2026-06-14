@@ -18,13 +18,13 @@
         >
           <ng-template let-item pTemplate="selectedItem">
             <div class="flex gap-1 item_template" *ngIf="itemId">
-              <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+              <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
           <ng-template let-item pTemplate="item">
             <div class="flex gap-1 {{ item.lv200ClassName }}">
-              <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+              <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
@@ -76,24 +76,24 @@
           [disabled]="!itemId"
           [showClear]="true"
           (onChange)="onSelectItem('card1Id', $event.value)"
-          placeholder="Card{{ isWeapon ? ' 1' : '' }}"
+          placeholder="Carta{{ isWeapon ? ' 1' : '' }}"
         >
           <ng-template *ngIf="!isHeadCardable" let-item pTemplate="selectedItem">
             <div class="flex gap-1 item_template" *ngIf="card1Id">
-              <img src="assets/demo/images/items/card.png" alt="" class="item_img" />
+              <img src="assets/icons/card.png" alt="" class="item_img" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
 
           <ng-template *ngIf="isHeadCardable" let-item pTemplate="selectedItem">
             <div class="flex gap-1 item_template" *ngIf="card1Id">
-              <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+              <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
           <ng-template *ngIf="isHeadCardable" let-item pTemplate="item">
             <div class="flex gap-1">
-              <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+              <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
@@ -112,11 +112,11 @@
           [disabled]="!itemId"
           [showClear]="true"
           (onChange)="onSelectItem('card2Id', $event.value)"
-          placeholder="Card 2"
+          placeholder="Carta 2"
         >
           <ng-template let-item pTemplate="selectedItem">
             <div class="flex gap-1 item_template" *ngIf="card2Id">
-              <img src="assets/demo/images/items/card.png" alt="" class="item_img" />
+              <img src="assets/icons/card.png" alt="" class="item_img" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
@@ -135,11 +135,11 @@
           [disabled]="!itemId"
           [showClear]="true"
           (onChange)="onSelectItem('card3Id', $event.value)"
-          placeholder="Card3"
+          placeholder="Carta 3"
         >
           <ng-template let-item pTemplate="selectedItem">
             <div class="flex gap-1 item_template" *ngIf="card3Id">
-              <img src="assets/demo/images/items/card.png" alt="" class="item_img" />
+              <img src="assets/icons/card.png" alt="" class="item_img" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
@@ -158,11 +158,11 @@
           [disabled]="!itemId"
           [showClear]="true"
           (onChange)="onSelectItem('card4Id', $event.value)"
-          placeholder="Card 4"
+          placeholder="Carta 4"
         >
           <ng-template let-item pTemplate="selectedItem">
             <div class="flex gap-1 item_template" *ngIf="card4Id">
-              <img src="assets/demo/images/items/card.png" alt="" class="item_img" />
+              <img src="assets/icons/card.png" alt="" class="item_img" />
               <div>{{ item.label }}</div>
             </div>
           </ng-template>
@@ -177,7 +177,7 @@
           optionGroupLabel="label"
           optionLabel="label"
           [optionGroupChildren]="['children', 'children', 'children']"
-          placeholder="Option 1"
+          placeholder="Opção 1"
           [showClear]="true"
           (onChange)="onOptionChange('option1Value', $event)"
           (onClear)="onOptionChange('option1Value', $event)"
@@ -192,7 +192,7 @@
           optionGroupLabel="label"
           optionLabel="label"
           [optionGroupChildren]="['children', 'children', 'children']"
-          placeholder="Option 2"
+          placeholder="Opção 2"
           [showClear]="true"
           (onChange)="onOptionChange('option2Value', $event)"
           (onClear)="onOptionChange('option2Value', $event)"
@@ -214,17 +214,17 @@
               [showClear]="true"
               [disabled]="enchant1List.length === 0 || !itemId"
               (onChange)="onSelectItem('enchant1Id', $event.value)"
-              placeholder="Enchant 1"
+              placeholder="Encante 1"
             >
               <ng-template let-item pTemplate="selectedItem">
                 <div class="flex gap-1 item_template" *ngIf="enchant1Id">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
@@ -243,17 +243,17 @@
               [showClear]="true"
               [disabled]="enchant2List.length === 0 || !itemId"
               (onChange)="onSelectItem('enchant2Id', $event.value)"
-              placeholder="Enchant 2"
+              placeholder="Encante 2"
             >
               <ng-template let-item pTemplate="selectedItem">
                 <div class="flex gap-1 item_template" *ngIf="enchant2Id">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
@@ -272,17 +272,17 @@
               [showClear]="true"
               [disabled]="enchant3List.length === 0 || !itemId"
               (onChange)="onSelectItem('enchant3Id', $event.value)"
-              placeholder="Enchant 3"
+              placeholder="Encante 3"
             >
               <ng-template let-item pTemplate="selectedItem">
                 <div class="flex gap-1 item_template" *ngIf="enchant3Id">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
@@ -301,17 +301,17 @@
               [showClear]="true"
               [disabled]="enchant4List.length === 0 || !itemId"
               (onChange)="onSelectItem('enchant4Id', $event.value)"
-              placeholder="Enchant 4"
+              placeholder="Encante 4"
             >
               <ng-template let-item pTemplate="selectedItem">
                 <div class="flex gap-1 item_template" *ngIf="enchant4Id">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" class="item_img" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" class="item_img" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
               <ng-template let-item pTemplate="item">
                 <div class="flex gap-1">
-                  <img src="assets/demo/images/items/{{ item.value }}.png" alt="" style="width: 19px" />
+                  <img [src]="item.value | iconUrl: 'item'" alt="" style="width: 19px" />
                   <div>{{ item.label }}</div>
                 </div>
               </ng-template>
@@ -331,7 +331,7 @@
               optionGroupLabel="label"
               optionLabel="label"
               [optionGroupChildren]="['children', 'children', 'children']"
-              placeholder="Option 1"
+              placeholder="Opção 1"
               [showClear]="true"
               (onChange)="onOptionChange('option1Value', $event)"
               (onClear)="onOptionChange('option1Value', $event)"
@@ -346,7 +346,7 @@
               optionGroupLabel="label"
               optionLabel="label"
               [optionGroupChildren]="['children', 'children', 'children']"
-              placeholder="Option 2"
+              placeholder="Opção 2"
               [showClear]="true"
               (onChange)="onOptionChange('option2Value', $event)"
               (onClear)="onOptionChange('option2Value', $event)"
@@ -361,7 +361,7 @@
               optionGroupLabel="label"
               optionLabel="label"
               [optionGroupChildren]="['children', 'children', 'children']"
-              placeholder="Option 3"
+              placeholder="Opção 3"
               [showClear]="true"
               (onChange)="onOptionChange('option3Value', $event)"
               (onClear)="onOptionChange('option3Value', $event)"

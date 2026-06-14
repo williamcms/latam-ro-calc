@@ -193,6 +193,53 @@ export const ClassID = {
 } as const;
 
 /**
+ * pt-BR class names, sourced from ../latamvisuais (public/db/classes.json,
+ * extracted from the LATAM client). Used for the class-picker label; classes
+ * not listed here fall back to the English ClassID name.
+ */
+export const ClassNamePtBr: Partial<Record<ClassIDEnum, string>> = {
+  [ClassIDEnum.RoyalGuard]: 'Guardião Real',
+  [ClassIDEnum.ImperialGuard]: 'Guardião Imperial',
+  [ClassIDEnum.RuneKnight]: 'Cavaleiro Rúnico',
+  [ClassIDEnum.DragonKnight]: 'Cavaleiro Draconiano',
+  [ClassIDEnum.ArchBishop]: 'Arcebispo',
+  [ClassIDEnum.Cardinal]: 'Cardeal',
+  [ClassIDEnum.Sura]: 'Shura',
+  [ClassIDEnum.Inquisitor]: 'Inquisidor',
+  [ClassIDEnum.Ranger]: 'Sentinela',
+  [ClassIDEnum.Windhawk]: 'Falcão do Vento',
+  [ClassIDEnum.Minstrel]: 'Trovador',
+  [ClassIDEnum.Troubadour]: 'Maestro',
+  [ClassIDEnum.Wanderer]: 'Musa',
+  [ClassIDEnum.Trouvere]: 'Diva',
+  [ClassIDEnum.GuillotineCross]: 'Sicário',
+  [ClassIDEnum.ShadowCross]: 'Executor',
+  [ClassIDEnum.ShadowChaser]: 'Renegado',
+  [ClassIDEnum.AbyssChaser]: 'Mandraque',
+  [ClassIDEnum.Warlock]: 'Arcano',
+  [ClassIDEnum.ArchMage]: 'Magus',
+  [ClassIDEnum.Sorcerer]: 'Feiticeiro',
+  [ClassIDEnum.ElementalMaster]: 'Elementalista',
+  [ClassIDEnum.Mechanic]: 'Mecânico',
+  [ClassIDEnum.Meister]: 'Engenheiro',
+  [ClassIDEnum.Genetic]: 'Bioquímico',
+  [ClassIDEnum.Biolo]: 'Cientista',
+  [ClassIDEnum.StarEmperor]: 'Mestre Estelar',
+  [ClassIDEnum.SkyEmperor]: 'Mestre Celestial',
+  [ClassIDEnum.SoulReaper]: 'Ceifador de Almas',
+  [ClassIDEnum.SoulAscetic]: 'Asceta',
+  [ClassIDEnum.Kagerou]: 'Kagerou',
+  [ClassIDEnum.Shinkiro]: 'Shinkiro',
+  [ClassIDEnum.Oboro]: 'Oboro',
+  [ClassIDEnum.Shiranui]: 'Shiranui',
+  [ClassIDEnum.Rebellion]: 'Insurgente',
+  [ClassIDEnum.NightWatch]: 'Guerrilheiro',
+  [ClassIDEnum.SuperNovice]: 'Superaprendiz',
+  [ClassIDEnum.HyperNovice]: 'Hiperaprendiz',
+  [ClassIDEnum.Doram]: 'Invocador',
+} as const;
+
+/**
   4060 Rune Knight    4061 Warlock                 4062 Ranger             4063 Arch Bishop
   4064 Mechanic         4065 Guillotine Cross  4073 Royal Guard    4074 Sorcerer
   4075 Minstrel            4076 Wanderer              4077 Sura                  4078 Genetic
