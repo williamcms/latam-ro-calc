@@ -370,7 +370,7 @@ export class Calculator {
     const itemData = this.getItem(itemId);
     this.equipItem.set(ItemTypeEnum.weapon, itemData);
     if (itemData) {
-      this.equipItemName.set(ItemTypeEnum.weapon, this.removeItemSlotName(itemData.name));
+      this.equipItemName.set(ItemTypeEnum.weapon, this.matchName(itemData));
     } else {
       this.equipItemName.delete(ItemTypeEnum.weapon);
     }
@@ -387,7 +387,7 @@ export class Calculator {
     const itemData = this.getItem(itemId);
     this.equipItem.set(itemType, itemData);
     if (itemData) {
-      this.equipItemName.set(itemType, this.removeItemSlotName(itemData.name));
+      this.equipItemName.set(itemType, this.matchName(itemData));
     } else {
       this.equipItemName.delete(itemType);
     }
@@ -874,8 +874,7 @@ export class Calculator {
     const [unusedPos2, position2] = restCondition.match(/POS_SPECIFIC\[(\D+?)]/) ?? [];
     if (position2) {
       const [_position, _itemName] = position2.split('==');
-      const itName = this.equipItem.get(_position as any)?.name;
-      if (this.removeItemSlotName(itName || '') !== _itemName) return { isValid: false, restCondition };
+      if (this.matchName(this.equipItem.get(_position as any)) !== _itemName) return { isValid: false, restCondition };
 
       restCondition = restCondition.replace(unusedPos2, '');
       if (restCondition.startsWith('===')) return { isValid: true, restCondition };
@@ -1066,6 +1065,17 @@ export class Calculator {
 
   private removeItemSlotName(itemName: string) {
     return itemName.replace(/\[\d]$/, '').trim();
+  }
+
+  /**
+   * Name an item is matched by in script conditions (EQUIP[...], POS_SPECIFIC[...],
+   * REFINE_NAME[...]). Those are authored with the original English display name, so
+   * we match against `enName` (preserved by the LATAM overlay before it swaps in the
+   * pt-BR `name`) and fall back to `name` for items that aren't localized.
+   */
+  private matchName(item: { name: string; enName?: string } | undefined) {
+    if (!item) return '';
+    return this.removeItemSlotName(item.enName ?? item.name);
   }
 
   /**

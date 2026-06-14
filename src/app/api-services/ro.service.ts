@@ -60,6 +60,10 @@ export class RoService {
           const pt = latam[id];
           item.presentInLatam = !!pt;
           if (pt) {
+            // Set/combo scripts (EQUIP[...], POS_SPECIFIC[...], REFINE_NAME[...]) match
+            // partner items by their English display name. Preserve it before swapping
+            // in the pt-BR name so those bonuses keep resolving after localization.
+            item.enName = item.name;
             item.name = pt.name;
             if (pt.description) item.description = pt.description;
           }
