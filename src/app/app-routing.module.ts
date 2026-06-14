@@ -15,21 +15,7 @@ import { AppLayoutComponent } from './layout/app.layout.component';
               loadChildren: () =>
                 import('./layout/pages/ro-calculator/ro-calculator.module').then((m) => m.RoCalculatorModule),
             },
-            {
-              path: 'shared-presets',
-              loadChildren: () =>
-                import('./layout/pages/shared-preset/shared-preset.module').then((m) => m.SharedPresetModule),
-            },
-            {
-              path: 'preset-summary',
-              loadChildren: () =>
-                import('./layout/pages/preset-summary/preset-summary.module').then((m) => m.PresetSummaryModule),
-            },
           ],
-        },
-        {
-          path: 'login',
-          loadChildren: () => import('./layout/pages/auth/auth.module').then((m) => m.AuthModule),
         },
         {
           path: '**',

@@ -20,10 +20,8 @@ import { AppLayoutComponent } from './app.layout.component';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ChipModule } from 'primeng/chip';
-import { TabMenuModule } from 'primeng/tabmenu';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { UserProfileModule } from './pages/user-profile/user-profile.module';
 
 @NgModule({
   declarations: [
@@ -50,10 +48,8 @@ import { UserProfileModule } from './pages/user-profile/user-profile.module';
     ButtonModule,
     DialogModule,
     ChipModule,
-    TabMenuModule,
     ConfirmDialogModule,
     ToastModule,
-    UserProfileModule,
   ],
   exports: [AppLayoutComponent],
 })

@@ -34,7 +34,6 @@ import { PrettyJsonPipe } from '../../prettier-json.pipe';
 import { RoCalculatorRoutingModule } from './ro-calculator-routing.module';
 import { EquipmentComponent } from './equipment/equipment.component';
 import { CalcValueComponent } from './calc-value/calc-value.component';
-import { PresetTableComponent } from './preset-table/preset-table.component';
 import { MonsterDataViewComponent } from './monster-data-view/monster-data-view.component';
 import { FieldsetModule } from 'primeng/fieldset';
 import { MiscDetailComponent } from './misc-detail/misc-detail.component';
@@ -94,7 +93,6 @@ import { MonsterTermPipe } from '../../../pipes/monster-term.pipe';
     EquipmentComponent,
     CalcValueComponent,
     PrettyJsonPipe,
-    PresetTableComponent,
     MonsterDataViewComponent,
     MiscDetailComponent,
     EquipmentShadowComponent,

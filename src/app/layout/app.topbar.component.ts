@@ -1,50 +1,13 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
-import { DialogService } from 'primeng/dynamicdialog';
-import { Subscription } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { AuthService } from '../api-services';
-import { LayoutService } from './service/app.layout.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html',
   styleUrls: ['./app.topbar.component.css'],
-  providers: [ConfirmationService, MessageService, DialogService],
 })
-export class AppTopBarComponent implements OnInit, OnDestroy {
-  activeItem: MenuItem | undefined;
-  items: MenuItem[] = [
-    {
-      label: 'Calculadora',
-      icon: 'pi pi-fw pi-home',
-      routerLink: ['/'],
-      routerLinkActiveOptions: {
-        exact: true,
-      },
-    },
-    {
-      label: 'Predefinições Compartilhadas',
-      icon: 'pi pi-fw pi-list',
-      routerLink: ['/shared-presets'],
-    },
-    {
-      label: 'Ranking de Itens',
-      icon: 'pi pi-fw pi-sort-amount-down',
-      routerLink: ['/preset-summary'],
-      isNew: true,
-    } as any,
-  ];
-
-  @ViewChild('menubutton') menuButton!: ElementRef;
-
-  @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
-
-  @ViewChild('topbarmenu') menu!: ElementRef;
-
+export class AppTopBarComponent {
   visibleInfo: boolean = false;
   visibleReference = false;
-  env = environment;
 
   infos = [
     'Todos os dados de itens, monstros e habilidades vêm do site "divine-pride".',
@@ -1059,42 +1022,6 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
   // Don't auto-open the changelog on load; it's still reachable via the "what's new" button.
   visibleUpdate = false;
 
-  username: string;
-
-  obs = [] as Subscription[];
-
-  constructor(
-    public layoutService: LayoutService,
-    private readonly authService: AuthService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService,
-  ) { }
-
-  ngOnDestroy(): void {
-    for (const subscription of this.obs) {
-      subscription?.unsubscribe();
-    }
-  }
-
-  ngOnInit(): void {
-    const o = this.authService.profileEventObs$.subscribe((profile) => {
-      this.username = profile?.name;
-    });
-    this.obs.push(o);
-  }
-
-  logout() {
-    this.waitConfirm('Sair?').then((isConfirm) => {
-      if (!isConfirm) return;
-
-      this.authService.logout();
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Você saiu',
-      });
-    });
-  }
-
   showUpdateDialog() {
     this.visibleUpdate = true;
   }
@@ -1116,26 +1043,5 @@ export class AppTopBarComponent implements OnInit, OnDestroy {
 
   showInfoDialog() {
     this.visibleInfo = true;
-  }
-
-  showMyProfile() {
-    this.layoutService.showMyProfileSidebar();
-  }
-
-  private waitConfirm(message: string, icon?: string) {
-    return new Promise((res) => {
-      this.confirmationService.confirm({
-        message: message,
-        header: 'Confirmação',
-        icon: icon || 'pi pi-exclamation-triangle',
-        accept: () => {
-          res(true);
-        },
-        reject: () => {
-          console.log('reject confirm');
-          res(false);
-        },
-      });
-    });
   }
 }
