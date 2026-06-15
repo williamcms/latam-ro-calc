@@ -38,6 +38,30 @@
       }
     },
     {
+      "files": ["src/app/core/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@angular/*", "@angular/**"],
+                "message": "src/app/core is the framework-free calculation engine and must not depend on Angular. Keep UI concerns in the component layer."
+              },
+              {
+                "group": ["primeng", "primeng/**", "rxjs", "rxjs/**"],
+                "message": "src/app/core is the framework-free calculation engine and must not depend on UI/reactive libraries (PrimeNG, RxJS)."
+              },
+              {
+                "group": ["**/layout/**", "src/app/layout/**"],
+                "message": "src/app/core must not import from the UI layer (src/app/layout)."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["*.html"],
       "extends": ["plugin:@angular-eslint/template/recommended", "plugin:@angular-eslint/template/accessibility"],
       "rules": {

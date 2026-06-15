@@ -1,10 +1,10 @@
-import { ItemTypeEnum, MainItemWithRelations } from '../../../constants/item-type.enum';
-import { CharacterBase } from '../../../jobs/_character-base.abstract';
-import { EquipmentSummaryModel } from '../../../models/equipment-summary.model';
-import { HpSpTable } from '../../../models/hp-sp-table.model';
-import { InfoForClass } from '../../../models/info-for-class.model';
-import { StatusSummary } from '../../../models/status-summary.model';
-import { floor } from '../../../utils';
+import { ItemTypeEnum, MainItemWithRelations } from 'src/app/constants/item-type.enum';
+import { CharacterBase } from 'src/app/jobs/_character-base.abstract';
+import { EquipmentSummaryModel } from 'src/app/models/equipment-summary.model';
+import { HpSpTable } from 'src/app/models/hp-sp-table.model';
+import { InfoForClass } from 'src/app/models/info-for-class.model';
+import { StatusSummary } from 'src/app/models/status-summary.model';
+import { floor } from 'src/app/utils';
 
 const mainEquipment = [
   ItemTypeEnum.weapon,

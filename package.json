@@ -6,7 +6,10 @@
         "start": "ng serve  --host 0.0.0.0 --hmr --port 4200",
         "start2": "ng serve",
         "build": "ng build",
-        "test": "ng test",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:cov": "vitest run --coverage",
+        "test:ng": "ng test",
         "lint": "ng lint --fix",
         "e2e": "ng e2e",
         "predeploy": "ng build --output-hashing all --output-path ../tong-calc-ro-host/docs --base-href ../tong-calc-ro-host/",
@@ -57,6 +60,8 @@
         "karma-coverage": "~2.2.0",
         "karma-jasmine": "~5.1.0",
         "karma-jasmine-html-reporter": "~2.1.0",
-        "typescript": "~5.1.3"
+        "typescript": "~5.1.3",
+        "vitest": "~2.1.9",
+        "@vitest/coverage-v8": "~2.1.9"
     }
 }

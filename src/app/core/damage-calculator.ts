@@ -1,13 +1,13 @@
 import { ElementMapper, ElementType, ItemTypeEnum, SizePenaltyMapper } from 'src/app/constants';
 import { SKILL_NAME } from 'src/app/constants/skill-name';
 import { Monster, Weapon } from 'src/app/domain';
-import { AtkSkillFormulaInput, AtkSkillModel, CharacterBase } from '../../../jobs/_character-base.abstract';
-import { BasicDamageSummaryModel, DamageSummaryModel, MiscModel, SkillDamageSummaryModel, SkillType } from '../../../models/damage-summary.model';
-import { EquipmentSummaryModel } from '../../../models/equipment-summary.model';
-import { InfoForClass } from '../../../models/info-for-class.model';
-import { MainModel } from '../../../models/main.model';
-import { StatusSummary } from '../../../models/status-summary.model';
-import { calcDmgDps, calcSkillAspd, floor, isSkillCanEDP, round } from '../../../utils';
+import { AtkSkillFormulaInput, AtkSkillModel, CharacterBase } from 'src/app/jobs/_character-base.abstract';
+import { BasicDamageSummaryModel, DamageSummaryModel, MiscModel, SkillDamageSummaryModel, SkillType } from 'src/app/models/damage-summary.model';
+import { EquipmentSummaryModel } from 'src/app/models/equipment-summary.model';
+import { InfoForClass } from 'src/app/models/info-for-class.model';
+import { MainModel } from 'src/app/models/main.model';
+import { StatusSummary } from 'src/app/models/status-summary.model';
+import { calcDmgDps, calcSkillAspd, floor, isSkillCanEDP, round } from 'src/app/utils';
 
 interface DamageResultModel {
   minDamage: number;
