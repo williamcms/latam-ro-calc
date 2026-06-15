@@ -92,8 +92,17 @@ function resolveSlots(loc: number): ResolvedSlot[] {
   if (loc & EQP.ARMOR) push('armor');
   if (loc & EQP.GARMENT) push('garment');
   if (loc & EQP.SHOES) push('boot');
-  if (loc & EQP.ACC_L) push('accLeft');
-  if (loc & EQP.ACC_R) push('accRight');
+  // rAthena names the accessory bits ACC_L=0x8 / ACC_R=0x80, but that naming is
+  // inverted relative to the in-game "Right/Left accessory" type and the
+  // calculator's slots: the item the game calls a *Right* accessory is worn at
+  // the ACC_L bit, and a *Left* accessory at the ACC_R bit. (Verified against
+  // replays — every "Aces. Direito" item, e.g. Illusion Booster R / Sinful Ruby
+  // Ring, carries 0x8; every "Aces. Esquerdo", e.g. Illusion Booster L, carries
+  // 0x80.) Map each bit to the matching side so a side-locked accessory lands in
+  // a slot whose dropdown actually lists it (a "both sides" accessory is in both
+  // lists, so it showed regardless — but on the wrong side — before this fix).
+  if (loc & EQP.ACC_L) push('accRight');
+  if (loc & EQP.ACC_R) push('accLeft');
   if (loc & EQP.HEAD_TOP) push('headUpper');
   if (loc & EQP.HEAD_MID) push('headMiddle');
   if (loc & EQP.HEAD_LOW) push('headLower');
