@@ -15,16 +15,31 @@
               <ng-template pTemplate="body" let-val>
                 <tr>
                   <td class="text_ellips_no_height">
-                    <span class="skill_name_cell" [title]="val.displayName || val.name">
+                    <span
+                      class="skill_name_cell"
+                      [pTooltip]="skillTooltip ? skillTooltip(val) : (val.displayName || val.name)"
+                      [escape]="false"
+                      tooltipPosition="top"
+                      [showDelay]="400"
+                      tooltipStyleClass="item_desc_tooltip"
+                    >
                       <img *ngIf="val.icon" [src]="val.icon | iconUrl: 'skill'" alt="" class="skill_icon" />
-                      <span class="skill_label_text">{{ val.displayName || val.name }}</span>
+                      <a
+                        *ngIf="val.icon"
+                        class="skill_label_text skill_link"
+                        href="https://www.divine-pride.net/database/skill/{{ val.icon }}"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        >{{ val.displayName || val.name }}</a
+                      >
+                      <span *ngIf="!val.icon" class="skill_label_text">{{ val.displayName || val.name }}</span>
                     </span>
                   </td>
                   <td>
-                    <span class="{{ !!val.value ? 'summary_damage' : '' }}">{{ val.value || '-' }}</span>
+                    <span class="{{ !!val.value ? 'summary_damage bonus_clickable' : '' }}" (click)="val.value && onSkillClick(val, 'value')">{{ val.value || '-' }}</span>
                   </td>
                   <td>
-                    <span class="{{ !!val.cd ? 'summary_damage' : '' }}">{{ val.cd || '-' }}</span>
+                    <span class="{{ !!val.cd ? 'summary_damage bonus_clickable' : '' }}" (click)="val.cd && onSkillClick(val, 'cd')">{{ val.cd || '-' }}</span>
                   </td>
                 </tr>
               </ng-template>
@@ -43,10 +58,10 @@
                 <tr>
                   <td>{{ val.displayName || val.name }}</td>
                   <td>
-                    <span class="{{ val.physical != 0 ? 'summary_stat_atk' : '' }}">{{ val.physical || '-' }}</span>
+                    <span class="{{ val.physical != 0 ? 'summary_stat_atk bonus_clickable' : '' }}" (click)="val.physical && onClassClick(val, 'physical')">{{ val.physical || '-' }}</span>
                   </td>
                   <td>
-                    <span class="{{ val.magical != 0 ? 'summary_stat_matk' : '' }}">{{ val.magical || '-' }}</span>
+                    <span class="{{ val.magical != 0 ? 'summary_stat_matk bonus_clickable' : '' }}" (click)="val.magical && onClassClick(val, 'magical')">{{ val.magical || '-' }}</span>
                   </td>
                 </tr>
               </ng-template>
@@ -65,10 +80,10 @@
                 <tr>
                   <td>{{ val.displayName || val.name }}</td>
                   <td>
-                    <span class="{{ val.physical != 0 ? 'summary_stat_atk' : '' }}">{{ val.physical || '-' }}</span>
+                    <span class="{{ val.physical != 0 ? 'summary_stat_atk bonus_clickable' : '' }}" (click)="val.physical && onSizeClick(val, 'physical')">{{ val.physical || '-' }}</span>
                   </td>
                   <td>
-                    <span class="{{ val.magical != 0 ? 'summary_stat_matk' : '' }}">{{ val.magical || '-' }}</span>
+                    <span class="{{ val.magical != 0 ? 'summary_stat_matk bonus_clickable' : '' }}" (click)="val.magical && onSizeClick(val, 'magical')">{{ val.magical || '-' }}</span>
                   </td>
                 </tr>
               </ng-template>
@@ -90,10 +105,9 @@
                       class="{{
                         val.value == 0
                           ? ''
-                          : val.name == 'Melee' || val.name == 'Range'
-                          ? 'summary_stat_atk'
-                          : 'summary_stat_matk'
+                          : (val.name == 'Melee' || val.name == 'Range' ? 'summary_stat_atk' : 'summary_stat_matk') + ' bonus_clickable'
                       }}"
+                      (click)="val.value && onAtkTypeClick(val)"
                       >{{ val.value || '-' }}</span
                     >
                   </td>
@@ -116,10 +130,10 @@
             <tr>
               <td>{{ val.displayName || val.name }}</td>
               <td>
-                <span class="{{ val.physical != 0 ? 'summary_stat_atk' : '' }}">{{ val.physical || '-' }}</span>
+                <span class="{{ val.physical != 0 ? 'summary_stat_atk bonus_clickable' : '' }}" (click)="val.physical && onRaceClick(val, 'physical')">{{ val.physical || '-' }}</span>
               </td>
               <td>
-                <span class="{{ val.magical != 0 ? 'summary_stat_matk' : '' }}">{{ val.magical || '-' }}</span>
+                <span class="{{ val.magical != 0 ? 'summary_stat_matk bonus_clickable' : '' }}" (click)="val.magical && onRaceClick(val, 'magical')">{{ val.magical || '-' }}</span>
               </td>
             </tr>
           </ng-template>
@@ -144,17 +158,17 @@
             <span class="{{ 'font-medium property_' + val.name }}">{{ val.displayName || val.name }}</span>
           </td>
           <td>
-            <span class="{{ val.physicalElementToMonster != 0 ? 'summary_stat_atk' : '' }}">{{
+            <span class="{{ val.physicalElementToMonster != 0 ? 'summary_stat_atk bonus_clickable' : '' }}" (click)="val.physicalElementToMonster && onElementClick(val, 'physical')">{{
               val.physicalElementToMonster || '-'
             }}</span>
           </td>
           <td>
-            <span class="{{ val.magicalElementToMonster != 0 ? 'summary_stat_matk' : '' }}">{{
+            <span class="{{ val.magicalElementToMonster != 0 ? 'summary_stat_matk bonus_clickable' : '' }}" (click)="val.magicalElementToMonster && onElementClick(val, 'magical')">{{
               val.magicalElementToMonster || '-'
             }}</span>
           </td>
           <td>
-            <span class="{{ val.myElement != 0 ? 'summary_stat_matk' : '' }}">{{ val.myElement || '-' }}</span>
+            <span class="{{ val.myElement != 0 ? 'summary_stat_matk bonus_clickable' : '' }}" (click)="val.myElement && onElementClick(val, 'myElement')">{{ val.myElement || '-' }}</span>
           </td>
         </tr>
       </ng-template>

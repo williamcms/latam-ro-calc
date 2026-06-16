@@ -46,6 +46,7 @@ import { MainModel } from '../../../models/main.model';
 import { environment } from 'src/environments/environment';
 import { getClassDropdownList } from '../../../jobs/_class-list';
 import { racePtBr, sizePtBr, elementPtBr } from '../../../constants/monster-i18n';
+import { itemSlotLabelPtBr } from '../../../constants/item-slot-i18n';
 import { ChanceModel } from '../../../models/chance-model';
 import { BasicDamageSummaryModel, SkillDamageSummaryModel } from '../../../models/damage-summary.model';
 import { DropdownModel, ItemDropdownModel } from '../../../models/dropdown.model';
@@ -232,6 +233,13 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   possiblyDamages: DropdownModel[];
   itemSummary: any;
   itemSummary2: any;
+  /** Full per-source bonus breakdown (every equip slot/card/enchant + skills) from
+   *  the last calc; powers the "which items contribute to this value" modal. */
+  private bonusBreakdownSources: Record<string, any> = {};
+  isShowBonusBreakdown = false;
+  bonusBreakdownTitle = '';
+  bonusBreakdownValueClass = 'summary_damage';
+  bonusBreakdownRows: { label: string; icon?: number; iconType: 'item' | 'skill'; value: number }[] = [];
   modelSummary: any;
   totalSummary: any;
 
@@ -286,6 +294,8 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   showCompareItemMap = {} as any;
   compareItemNames = [] as ItemTypeEnum[];
   compareItemList: (keyof typeof ItemTypeEnum)[] = [...AllowedCompareItemTypes];
+  // Display options for the "comparar slot" multiselect: pt-BR label, English value.
+  compareItemOptions = this.compareItemList.map((v) => ({ label: itemSlotLabelPtBr(v), value: v }));
 
   ref: DynamicDialogRef | undefined;
   monsterRef: DynamicDialogRef | undefined;
@@ -563,22 +573,22 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   private initCalcTableColumns() {
     this.cols = [
       { field: 'health', header: 'HP', default: true },
-      { field: 'monsterClass', header: 'Class' },
-      { field: 'skillMinDamage', header: 'SkillMin', default: true },
-      { field: 'skillMaxDamage', header: 'SkillMax', default: true },
+      { field: 'monsterClass', header: 'Classe' },
+      { field: 'skillMinDamage', header: 'Dano Mín', default: true },
+      { field: 'skillMaxDamage', header: 'Dano Máx', default: true },
       { field: 'skillDps', header: 'DPS', default: true },
-      { field: 'skillHitKill', header: 'HitKill', default: true },
-      { field: 'skillCriRateToMonster', header: 'Cri%' },
-      { field: 'skillAccuracy', header: 'แม่น' },
-      { field: 'skillTotalPene', header: 'เจาะ' },
-      // { field: 'hitRate', header: 'แม่น' },
-      { field: 'accuracy', header: 'Basicแม่น' },
-      { field: 'totalPene', header: 'Basicเจาะ' },
-      { field: 'basicMinDamage', header: 'BasicMin' },
-      { field: 'basicMaxDamage', header: 'BasicMax' },
-      { field: 'criMaxDamage', header: 'BasicCriDmg' },
-      { field: 'criMaxDamage', header: 'BasicDPS' },
-      { field: 'basicCriRate', header: 'BasicCri%' },
+      { field: 'skillHitKill', header: 'Golpes p/ Matar', default: true },
+      { field: 'skillCriRateToMonster', header: 'Tx. Crít.' },
+      { field: 'skillAccuracy', header: 'Precisão' },
+      { field: 'skillTotalPene', header: 'Penetração' },
+      // { field: 'hitRate', header: 'Precisão' },
+      { field: 'accuracy', header: 'Precisão Bás.' },
+      { field: 'totalPene', header: 'Penetração Bás.' },
+      { field: 'basicMinDamage', header: 'Dano Mín Bás.' },
+      { field: 'basicMaxDamage', header: 'Dano Máx Bás.' },
+      { field: 'criMaxDamage', header: 'Dano Crít. Bás.' },
+      { field: 'criMaxDamage', header: 'DPS Bás.' },
+      { field: 'basicCriRate', header: 'Tx. Crít. Bás.' },
     ];
     const availableCols = new Map(this.cols.map((a) => [a.field, a]));
 
@@ -720,6 +730,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     const modelSummary = calc.getModelSummary() as any;
     this.modelSummary = { ...modelSummary, rawOptionTxts: modelSummary.rawOptionTxts.filter(Boolean) };
     const x = calc.getItemSummary();
+    this.bonusBreakdownSources = x;
     const splitNumber = Object.keys(x).length / 2;
     const part1 = Object.entries(x).filter((a, index) => {
       return index < splitNumber;
@@ -1320,7 +1331,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
         scaleName: scaleName.at(0),
         health,
         groups: spawnMap.trim().split(','),
-        searchVal: spawnMap,
+        searchVal: `${spawnMap} ${id}`,
       };
 
       monsters.push(monster);
@@ -2036,6 +2047,49 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     // only memoise once the description data has loaded (avoid caching the fallback)
     if (descReady) this.buffTooltipCache.set(buff.name, html);
     return html;
+  }
+
+  /** Reuses the buff popover for the skill-multiplier rows rendered by <app-misc-detail>.
+   *  Those rows carry { name, displayName, icon } but no dropdown, so the popover shows
+   *  the pt-BR client description (or just the skill name when none exists). */
+  buffTooltipForMultiplier = (skill: { name: string; displayName?: string; icon?: number }): string =>
+    this.buffTooltip({ name: skill.name, label: skill.displayName || skill.name, icon: skill.icon, dropdown: [] });
+
+  /** Open the breakdown modal for a clicked summary value: list every source
+   *  (equip slot/card/enchant + skill) whose contribution to `keys` is non-zero. */
+  showBonusBreakdown(event: { label: string; keys: string[]; valueClass: string }): void {
+    const rows: typeof this.bonusBreakdownRows = [];
+    for (const [srcKey, bonusMap] of Object.entries(this.bonusBreakdownSources || {})) {
+      if (!bonusMap || typeof bonusMap !== 'object') continue;
+      let sum = 0;
+      for (const k of event.keys) {
+        const v = (bonusMap as any)[k];
+        if (typeof v === 'number') sum += v;
+      }
+      if (!sum) continue;
+      rows.push(this.resolveBonusSource(srcKey, sum));
+    }
+    rows.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+
+    this.bonusBreakdownTitle = event.label;
+    this.bonusBreakdownValueClass = event.valueClass || 'summary_damage';
+    this.bonusBreakdownRows = rows;
+    this.isShowBonusBreakdown = true;
+  }
+
+  /** Map a breakdown source key to a display row: an equipped item (slot/card/enchant),
+   *  a skill, or a labelled catch-all (extras/consumables). */
+  private resolveBonusSource(srcKey: string, value: number): { label: string; icon?: number; iconType: 'item' | 'skill'; value: number } {
+    const itemId = this.equipItemIdItemTypeMap.get(srcKey as any);
+    if (itemId && this.items[itemId]) {
+      return { label: this.items[itemId].name, icon: itemId, iconType: 'item', value };
+    }
+    const skill = this.resolveSkill(srcKey);
+    if (skill) {
+      return { label: skill.name, icon: skill.id, iconType: 'skill', value };
+    }
+    const fallback: Record<string, string> = { extra: 'Extras', consumableBonuses: 'Consumíveis' };
+    return { label: fallback[srcKey] ?? srcKey, iconType: 'item', value };
   }
 
   onLog(inputs) {

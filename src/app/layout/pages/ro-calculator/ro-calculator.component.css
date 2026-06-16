@@ -298,6 +298,52 @@ a.skill_link:hover {
   color: white;
 }
 
+.monster_sprite_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--border-radius);
+  background-color: var(--surface-card);
+}
+
+.bonus_clickable {
+  cursor: pointer;
+  text-decoration: underline dotted transparent;
+  transition: text-decoration-color 0.12s ease;
+}
+
+.bonus_clickable:hover {
+  text-decoration: underline dotted currentColor;
+}
+
+.bonus_breakdown_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bonus_breakdown_list li:not(:last-child) {
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.monster_id_link {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.monster_id_link:hover {
+  text-decoration: underline;
+}
+
 .img_monster {
   /* transparent — ragassets renders the sprite with an alpha background */
   /* max-width: 7rem; */

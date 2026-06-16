@@ -15,11 +15,32 @@
   position="left"
   [modal]="true"
   [(visible)]="isShowMonsterEle"
-  [style]="{ width: '50vw', 'min-width': '1378px', height: '100vh', 'min-height': '500px' }"
+  [style]="{ width: '50vw', 'min-width': '1500px', height: '100vh', 'min-height': '500px' }"
   [draggable]="false"
   [resizable]="false"
 >
   <app-elemental-table [monsterMap]="monsterDataMap" [groupMonsterList]="groupMonsterList" [allSelectedMonsterIds]="allSelectedMonsterIds"></app-elemental-table>
+</p-dialog>
+
+<p-dialog
+  [header]="bonusBreakdownTitle"
+  [(visible)]="isShowBonusBreakdown"
+  [modal]="true"
+  [dismissableMask]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '420px', 'max-width': '92vw' }"
+>
+  <div *ngIf="bonusBreakdownRows.length === 0" class="p-2 text-center">Nenhum item contribui para este valor.</div>
+  <ul *ngIf="bonusBreakdownRows.length" class="bonus_breakdown_list">
+    <li *ngFor="let r of bonusBreakdownRows" class="flex align-items-center justify-content-between py-2 px-1">
+      <span class="flex align-items-center gap-2 text_ellips">
+        <img *ngIf="r.icon" [src]="r.icon | iconUrl: r.iconType" alt="" class="skill_icon" />
+        <span>{{ r.label }}</span>
+      </span>
+      <span class="{{ bonusBreakdownValueClass }} font-semibold ml-2">{{ r.value > 0 ? '+' + r.value : r.value }}</span>
+    </li>
+  </ul>
 </p-dialog>
 
 <div class="grid grid-nogutter" style="min-width: 1500px">
@@ -428,7 +449,7 @@
               </div>
               <div class="col-12 item_label_compare">
                 <p-multiSelect
-                  [options]="compareItemList"
+                  [options]="compareItemOptions"
                   [(ngModel)]="compareItemNames"
                   [showClear]="true"
                   [showHeader]="false"
@@ -952,7 +973,7 @@
         <app-equipment
           [itemType]="'accRight'"
           [placeholder]="'Acess. Dir.'"
-          [overlayLabel]="'Right'"
+          [overlayLabel]="'Direita'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="accRightList"
@@ -1008,7 +1029,7 @@
         <app-equipment
           [itemType]="'accLeft'"
           [placeholder]="'Acess. Esq.'"
-          [overlayLabel]="'Left'"
+          [overlayLabel]="'Esquerda'"
           [items]="items"
           [mapEnchant]="mapEnchant"
           [itemList]="accLeftList"
@@ -1669,7 +1690,7 @@
       <p-accordionTab header="Resumo de Batalha">
         <div class="grid grid-nogutter battle_summary">
           <div class="col-12" [hidden]="!chanceList?.length">
-            <p-fieldset legend="Has a chance" [toggleable]="true">
+            <p-fieldset legend="Efeitos" [toggleable]="true">
               <div *ngFor="let category of chanceList" class="field-checkbox my-2">
                 <p-checkbox
                   name="group"
@@ -1723,7 +1744,20 @@
               <div class="col-5 flex align-items-center justify-content-center">
                 <div class="grid grid-nogutter" style="height: 100%; width: 100%">
                   <div class="col-12 flex align-items-center justify-content-center">
-                    <img [src]="selectedMonster | monsterSprite" class="img_monster" alt="-" />
+                    <div class="monster_sprite_container">
+                      <img [src]="selectedMonster | monsterSprite" class="img_monster" alt="-" />
+                    </div>
+                  </div>
+                  <div class="col-12 flex align-items-center justify-content-center">
+                    <a
+                      *ngIf="selectedMonster"
+                      class="monster_id_link"
+                      [href]="'https://www.divine-pride.net/database/monster/' + selectedMonster"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      ID: {{ selectedMonster }}<i class="pi pi-external-link ml-1" style="font-size: 0.7rem"></i>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -1885,10 +1919,12 @@
           [classTable]="classTable"
           [atkTypeTable]="atkTypeTable"
           [skillMultiplierTable]="skillMultiplierTable"
+          [skillTooltip]="buffTooltipForMultiplier"
+          (valueClick)="showBonusBreakdown($event)"
         ></app-misc-detail>
       </p-accordionTab>
       <p-accordionTab header="Resumo de Penetração">
-        <app-misc-detail [elementTable]="[]" [raceTable]="peneRaceTable" [sizeTable]="[]" [classTable]="peneClassTable" [skillMultiplierTable]="[]"></app-misc-detail>
+        <app-misc-detail [elementTable]="[]" [raceTable]="peneRaceTable" [sizeTable]="[]" [classTable]="peneClassTable" [skillMultiplierTable]="[]" [isPene]="true" (valueClick)="showBonusBreakdown($event)"></app-misc-detail>
       </p-accordionTab>
 
       <p-accordionTab header="Resumo">

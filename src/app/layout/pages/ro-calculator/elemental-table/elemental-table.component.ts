@@ -4,6 +4,7 @@ import { MonsterModel } from '../../../../models/monster.model';
 import { SelectItemGroup } from 'primeng/api';
 import { Subject, Subscription, debounceTime, tap } from 'rxjs';
 import { ElementMapper } from '../../../../constants/element-mapper';
+import { elementPtBr, racePtBr, sizePtBr } from '../../../../constants/monster-i18n';
 
 interface MonsterSelectItemGroup extends SelectItemGroup {
   items: any[];
@@ -92,7 +93,7 @@ export class ElementalTableComponent implements OnInit, OnDestroy {
     Object.entries(ElementMapper).forEach(([name, property]) => {
       const [pureElementName, elementLv] = name.split(' ');
       const data = {
-        info: name,
+        info: elementPtBr(name),
         pureElementName,
         ...property,
         NeutralStyle: this.getElementStyle(property.Neutral),
@@ -140,7 +141,7 @@ export class ElementalTableComponent implements OnInit, OnDestroy {
       const elementTable = ElementMapper[elementName];
 
       return {
-        info: `${name} (${raceName} , ${scaleName} , ${elementName})`,
+        info: `${name} (${racePtBr(raceName)} , ${sizePtBr(scaleName)} , ${elementPtBr(elementName)})`,
         pureElementName: elementShortName,
         Neutral: elementTable?.Neutral,
         NeutralStyle: this.getElementStyle(elementTable?.Neutral),

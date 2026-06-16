@@ -1,6 +1,20 @@
 import { createBaseStatOptionList } from './create-base-stat-option-list';
 import { createTraitStatOptionList } from './create-trait-stat-option-list';
 
+// pt-BR display labels. Keys stay English because the calc derives option
+// `value`s from those English strings — only the shown `label` is translated.
+const TR: Record<string, string> = {
+  'All Magic Elemental': 'Mágico (Todos Elem.)',
+  Melee: 'Corpo a corpo',
+  'Long Range': 'Longo Alcance',
+  Hit: 'Precisão',
+  'CRI Rate': 'Taxa Crít.',
+  'CRI Dmg': 'Dano Crít.',
+  MaxHP: 'HP Máx.',
+  'MaxHP %': 'HP Máx. %',
+};
+const tr = (s: string) => TR[s] ?? s;
+
 export const createMainStatOptionList = () => {
   const items = [];
 
@@ -22,11 +36,11 @@ export const createMainStatOptionList = () => {
     ['MaxHP %', 'hpPercent', 1, 2, ' %'],
   ];
   for (const [label, prop, min, max, suffix = '', stepRate = 1] of options) {
-    const labelNoPercent = label.replace(' %', '');
+    const labelNoPercent = tr(label).replace(' %', '');
     const sign = label === 'VCT' ? '-' : '+';
     const item = {
       value: label,
-      label,
+      label: tr(label),
       children: Array.from({ length: (max - min) / stepRate + 1 }, (_, k) => {
         const num = (k * stepRate + min);
         return {
