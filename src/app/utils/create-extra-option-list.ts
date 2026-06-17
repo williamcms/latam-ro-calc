@@ -1,4 +1,5 @@
 import { ElementType } from '../constants/element-type.const';
+import { elementPtBr, monsterTypePtBr, racePtBr, sizePtBr } from '../constants/monster-i18n';
 import { RaceType } from '../constants/race-type.const';
 import { DropdownModel } from '../models/dropdown.model';
 import { createBaseStatOptionList } from './create-base-stat-option-list';
@@ -9,6 +10,10 @@ import { createTraitStatOptionList } from './create-trait-stat-option-list';
 const TR: Record<string, string> = {
   Physical: 'Físico',
   Magical: 'Mágico',
+  Atk: 'ATQ',
+  'Atk %': 'ATQ %',
+  Matk: 'ATQM',
+  'Matk %': 'ATQM %',
   Race: 'Raça',
   Element: 'Elemento',
   Size: 'Tamanho',
@@ -17,9 +22,29 @@ const TR: Record<string, string> = {
   Melee: 'Corpo a corpo',
   'CRI Rate': 'Taxa Crít.',
   'CRI Dmg': 'Dano Crít.',
+  VCT: 'Conj. Variável',
   Delay: 'Pós-conjuração',
 };
 const tr = (s: string) => TR[s] ?? s;
+
+// Translate a damage-target member (race/element/size/class) for display. `All` is
+// the calc's "any target" sentinel; the per-type maps live in monster-i18n. Values
+// stay English — only the shown label is translated.
+const trProp = (dmgType: string, prop: string): string => {
+  if (prop === 'All') return 'Todos';
+  switch (dmgType) {
+    case 'Race':
+      return racePtBr(prop);
+    case 'Element':
+      return elementPtBr(prop);
+    case 'Size':
+      return sizePtBr(prop);
+    case 'Class':
+      return monsterTypePtBr(prop);
+    default:
+      return prop;
+  }
+};
 
 export const createExtraOptionList = () => {
   const atkTypes = ['Physical', 'Magical'];
@@ -52,12 +77,12 @@ export const createExtraOptionList = () => {
 
           return {
             value: `${atk}_${dmgType}_${finalProp}`,
-            label: finalProp,
+            label: trProp(dmgType, finalProp),
             children: Array.from({ length: 25 }, (_, k) => {
               const num = k + 1;
               return {
                 value: `${atk}_${propLow}_${fixedSize}:${num}`,
-                label: `${atk.toUpperCase()}. ${tr(dmgType)} ${finalProp} +${num}%`,
+                label: `${atk.toUpperCase()}. ${tr(dmgType)} ${trProp(dmgType, finalProp)} +${num}%`,
               };
             }),
           };
@@ -76,12 +101,12 @@ export const createExtraOptionList = () => {
       const elementLow = element.toLowerCase();
       return {
         value: `m_my_element_${elementLow}`,
-        label: element,
+        label: trProp('Element', element),
         children: Array.from({ length: 25 }, (_, k) => {
           const num = k + 1;
           return {
             value: `m_my_element_${elementLow}:${num}`,
-            label: `M. Meu ${element} +${num}%`,
+            label: `M. Meu ${trProp('Element', element)} +${num}%`,
           };
         }),
       };
@@ -94,17 +119,18 @@ export const createExtraOptionList = () => {
   });
 
   const peneList = [
-    { mainItemIdx: 0, label: 'Penetração Física - Raça', prefixProp: 'p_pene_race_', properties: atkProps.Race },
-    { mainItemIdx: 0, label: 'Penetração Física - Classe', prefixProp: 'p_pene_class_', properties: atkProps.Class },
-    { mainItemIdx: 1, label: 'Penetração Mágica - Raça', prefixProp: 'm_pene_race_', properties: atkProps.Race },
-    { mainItemIdx: 1, label: 'Penetração Mágica - Classe', prefixProp: 'm_pene_class_', properties: atkProps.Class },
+    { mainItemIdx: 0, kind: 'Race', label: 'Penetração Física - Raça', prefixProp: 'p_pene_race_', properties: atkProps.Race },
+    { mainItemIdx: 0, kind: 'Class', label: 'Penetração Física - Classe', prefixProp: 'p_pene_class_', properties: atkProps.Class },
+    { mainItemIdx: 1, kind: 'Race', label: 'Penetração Mágica - Raça', prefixProp: 'm_pene_race_', properties: atkProps.Race },
+    { mainItemIdx: 1, kind: 'Class', label: 'Penetração Mágica - Classe', prefixProp: 'm_pene_class_', properties: atkProps.Class },
   ] as {
     mainItemIdx: number;
+    kind: string;
     label: string;
     prefixProp: string;
     properties: string[];
   }[];
-  for (const { mainItemIdx, label, prefixProp, properties } of peneList) {
+  for (const { mainItemIdx, kind, label, prefixProp, properties } of peneList) {
     const VAL_CAP = 10;
     const scale = 1;
     const rawMin = 1;
@@ -120,19 +146,20 @@ export const createExtraOptionList = () => {
         values.push({ label: `${i * scale} - ${max * scale}`, min: i, max: max });
       }
 
+      const propLabel = trProp(kind, prop);
       children.push({
-        label: prop,
+        label: propLabel,
         value: prop,
         children: values.map((value) => {
           const { label: label2, min, max } = value;
 
           return {
-            label: `${prop} ${label2} %`,
+            label: `${propLabel} ${label2} %`,
             value: label2,
             children: Array.from({ length: max - min + 1 }, (_, k) => {
               const num = k + min;
               return {
-                label: `${pre} ${prop} ${num * scale} %`,
+                label: `${pre} ${propLabel} ${num * scale} %`,
                 value: `${prefixProp}${lower}:${num * scale}`,
               };
             }),

@@ -1,8 +1,21 @@
 import { DropdownModel } from '../models/dropdown.model';
 
+// pt-BR trait labels (same as the replay-import warning: POD/STA/SAB/FEI/CON/CRV).
+// `value`s stay English because the calc derives option values from them — only
+// the shown `label` is translated.
+const TR: Record<string, string> = {
+  POW: 'POD',
+  WIS: 'SAB',
+  SPL: 'FEI',
+  CRT: 'CRV',
+  'P.ATK': 'P.ATQ',
+  'S.MATK': 'S.ATQM',
+};
+const tr = (s: string) => TR[s] ?? s;
+
 export const createTraitStatOptionList = (starVal: number, endVal: number) => {
   const item: DropdownModel & { children: any[] } = {
-    label: 'Atributos Especiais',
+    label: 'Talentos',
     value: 'Trait Stat',
     children: [],
   };
@@ -33,7 +46,7 @@ export const createTraitStatOptionList = (starVal: number, endVal: number) => {
       children = Array.from({ length: max - min + 1 }, (_, k) => {
         const num = k + min;
         return {
-          label: `${label} +${num}`,
+          label: `${tr(label)} +${num}`,
           value: `${prop}:${num}`,
         };
       });
@@ -42,12 +55,12 @@ export const createTraitStatOptionList = (starVal: number, endVal: number) => {
         const { label: label2, min, max } = value;
 
         return {
-          label: `${label} ${label2}`,
+          label: `${tr(label)} ${label2}`,
           value: label2,
           children: Array.from({ length: max - min + 1 }, (_, k) => {
             const num = k + min;
             return {
-              label: `${label} +${num}`,
+              label: `${tr(label)} +${num}`,
               value: `${prop}:${num}`,
             };
           }),
@@ -55,7 +68,7 @@ export const createTraitStatOptionList = (starVal: number, endVal: number) => {
       });
     } else {
       item.children.push({
-        label,
+        label: tr(label),
         value: prop,
       });
 
@@ -64,7 +77,7 @@ export const createTraitStatOptionList = (starVal: number, endVal: number) => {
 
     item.children.push({
       value: label,
-      label,
+      label: tr(label),
       children,
     });
   }

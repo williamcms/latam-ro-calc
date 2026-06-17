@@ -4,12 +4,17 @@ import { createTraitStatOptionList } from './create-trait-stat-option-list';
 // pt-BR display labels. Keys stay English because the calc derives option
 // `value`s from those English strings — only the shown `label` is translated.
 const TR: Record<string, string> = {
+  Atk: 'ATQ',
+  'Atk %': 'ATQ %',
+  Matk: 'ATQM',
+  'Matk %': 'ATQM %',
   'All Magic Elemental': 'Mágico (Todos Elem.)',
   Melee: 'Corpo a corpo',
   'Long Range': 'Longo Alcance',
   Hit: 'Precisão',
   'CRI Rate': 'Taxa Crít.',
   'CRI Dmg': 'Dano Crít.',
+  VCT: 'Conj. Variável',
   MaxHP: 'HP Máx.',
   'MaxHP %': 'HP Máx. %',
 };
