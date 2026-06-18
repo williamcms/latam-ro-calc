@@ -152,11 +152,11 @@ export class Minstrel extends Dancer {
       cd: (lv) => 4.5 + lv * 0.5,
       totalHit: 12,
       levelList: [
-        { label: 'Severe Rainstorm Lv1', value: 'Severe Rainstorm==1' },
-        { label: 'Severe Rainstorm Lv2', value: 'Severe Rainstorm==2' },
-        { label: 'Severe Rainstorm Lv3', value: 'Severe Rainstorm==3' },
-        { label: 'Severe Rainstorm Lv4', value: 'Severe Rainstorm==4' },
-        { label: 'Severe Rainstorm Lv5', value: 'Severe Rainstorm==5' },
+        { label: 'Temporal de Flechas Lv1', value: 'Severe Rainstorm==1' },
+        { label: 'Temporal de Flechas Lv2', value: 'Severe Rainstorm==2' },
+        { label: 'Temporal de Flechas Lv3', value: 'Severe Rainstorm==3' },
+        { label: 'Temporal de Flechas Lv4', value: 'Severe Rainstorm==4' },
+        { label: 'Temporal de Flechas Lv5', value: 'Severe Rainstorm==5' },
       ],
       formula: (input: AtkSkillFormulaInput): number => {
         const { weapon, status, skillLevel, model } = input;

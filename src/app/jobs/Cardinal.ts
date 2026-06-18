@@ -165,7 +165,7 @@ export class Cardinal extends ArchBishop {
   private readonly atkSkillList4th: AtkSkillModel[] = [
     {
       name: 'Framen',
-      label: '[V3] Framen Lv5',
+      label: '[V2] Framen Lv5',
       value: 'Framen==5',
       acd: 0.5,
       fct: 1.5,
@@ -180,15 +180,15 @@ export class Cardinal extends ArchBishop {
         const fidusLv = this.learnLv('Fidus Animus');
 
         if (monster.isRace('demon', 'undead')) {
-          return (skillLevel * (900 + fidusLv * 5) + totalSpl * 5) * (baseLevel / 100);
+          return (skillLevel * (650 + fidusLv * 5) + totalSpl * 5) * (baseLevel / 100);
         }
 
-        return (skillLevel * (800 + fidusLv * 5) + totalSpl * 3) * (baseLevel / 100);
+        return (skillLevel * (500 + fidusLv * 5) + totalSpl * 3) * (baseLevel / 100);
       },
     },
     {
       name: 'Arbitrium',
-      label: '[V3] Arbitrium Lv10',
+      label: '[V2] Arbitrium Lv10',
       value: 'Arbitrium==10',
       acd: 0.5,
       fct: 1.5,
@@ -202,15 +202,15 @@ export class Cardinal extends ArchBishop {
         const baseLevel = model.level;
         const fidusLv = this.learnLv('Fidus Animus');
 
-        const primaryDmg = (skillLevel * (1250 + fidusLv * 10) + totalSpl * 7) * (baseLevel / 100);
-        const secondaryDmg = (skillLevel * (1000 + fidusLv * 10) + totalSpl * 7) * (baseLevel / 100);
+        const primaryDmg = (skillLevel * (400 + fidusLv * 10) + totalSpl * 7) * (baseLevel / 100);
+        const secondaryDmg = (skillLevel * (550 + fidusLv * 10) + totalSpl * 7) * (baseLevel / 100);
 
         return primaryDmg + secondaryDmg;
       },
     },
     {
       name: 'Petitio',
-      label: '[V3] Petitio Lv10',
+      label: '[V2] Petitio Lv10',
       value: 'Petitio==10',
       acd: 0.5,
       fct: 0,
@@ -233,7 +233,7 @@ export class Cardinal extends ArchBishop {
         const baseLevel = model.level;
         const mAndBookLv = this.learnLv('Mace & Book Mastery');
 
-        return (skillLevel * (1050 + mAndBookLv * 10) + totalPow * 5) * (baseLevel / 100);
+        return (skillLevel * (270 + mAndBookLv * 5) + totalPow * 5) * (baseLevel / 100);
       },
     },
   ];

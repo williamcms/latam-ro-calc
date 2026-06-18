@@ -165,7 +165,7 @@ export class ImperialGuard extends RoyalGuard {
   private readonly atkSkillList4th: AtkSkillModel[] = [
     {
       name: 'Overslash',
-      label: '[V3] Overslash Lv10 (1 hit)',
+      label: '[V2] Overslash Lv10 (1 hit)',
       value: 'Overslash==10',
       acd: 0.5,
       fct: 0.5,
@@ -178,12 +178,12 @@ export class ImperialGuard extends RoyalGuard {
         const baseLevel = model.level;
         const ssMastLv = this.learnLv('Spear & Sword Mastery');
 
-        return (skillLevel * (120 + ssMastLv * 10) + totalPow * 5) * (baseLevel / 100);
+        return (skillLevel * (60 + ssMastLv * 10) + totalPow * 2) * (baseLevel / 100);
       },
     },
     {
       name: 'Shield Shooting',
-      label: '[V3] Shield Shooting Lv5',
+      label: '[V2] Shield Shooting Lv5',
       value: 'Shield Shooting==5',
       acd: 0.5,
       fct: 0.5,
@@ -198,12 +198,12 @@ export class ImperialGuard extends RoyalGuard {
         const { level: baseLevel } = model;
         const shieldMastLv = this.learnLv('Shield Mastery');
 
-        return (200 + skillLevel * (1300 + shieldMastLv * 15) + totalPow * 5 + weight + refine * 4) * (baseLevel / 100);
+        return (500 + skillLevel * (600 + shieldMastLv * 15) + totalPow * 3 + weight + refine * 4) * (baseLevel / 100);
       },
     },
     {
       name: 'Cross Rain',
-      label: '[V3] Cross Rain Lv10',
+      label: '[V2] Cross Rain Lv10',
       value: 'Cross Rain==10',
       acd: 0.15,
       fct: 1.5,
@@ -219,10 +219,10 @@ export class ImperialGuard extends RoyalGuard {
         const ssMastLv = this.learnLv('Spear & Sword Mastery');
 
         if (this.isSkillActive('Holy Shield')) {
-          return (skillLevel * (450 + ssMastLv * 10) + totalSpl * 5) * (baseLevel / 100);
+          return (skillLevel * (250 + ssMastLv * 10) + totalSpl * 5) * (baseLevel / 100);
         }
 
-        return (skillLevel * (320 + ssMastLv * 5) + totalSpl * 2) * (baseLevel / 100);
+        return (skillLevel * (150 + ssMastLv * 5) + totalSpl * 5) * (baseLevel / 100);
       },
     },
   ];

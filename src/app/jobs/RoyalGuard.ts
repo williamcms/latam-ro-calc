@@ -99,7 +99,7 @@ export class RoyalGuard extends Paladin {
         const bashLv = this.learnLv('Bash');
 
         if (this.isSkillActive('Grand Judgement')) {
-          return skillLevel * 180 + bashLv * 70;
+          return (skillLevel * 180 + bashLv * 70) * (baseLevel / 100);
         }
 
         return (skillLevel * 80 + bashLv * 50) * (baseLevel / 100);

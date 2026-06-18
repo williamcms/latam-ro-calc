@@ -53,6 +53,21 @@ export class AppTopBarComponent {
       link: 'https://sigmathefallen.blogspot.com/2024/08/inquisitor-2nd-version.html',
     },
     {
+      label: 'Imperial Guard (2nd version)',
+      writer: 'Sigma the fallen',
+      link: 'https://sigmathefallen.blogspot.com/2024/08/imperial-guard-2nd-version.html',
+    },
+    {
+      label: 'Troubadour & Trouvere (2nd version)',
+      writer: 'Sigma the fallen',
+      link: 'https://sigmathefallen.blogspot.com/2024/06/troubadour-trouvere-2nd-version.html',
+    },
+    {
+      label: 'Cardinal (2nd version)',
+      writer: 'Sigma the fallen',
+      link: 'https://sigmathefallen.blogspot.com/2024/07/cardinal-2nd-version.html',
+    },
+    {
       label: 'Windhawk (2nd version)',
       writer: 'Sigma the fallen',
       link: 'https://sigmathefallen.blogspot.com/2024/07/windhawk-2nd-version.html',

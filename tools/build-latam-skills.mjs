@@ -43,7 +43,6 @@ const SKILL_NAME_ALIASES = {
   "Nuckle Boost": "Knuckle Boost",
   "Spread Shot": "Spread Attack",
   "Rain of Crystal": "Crystal Rain",        // AG_CRYSTAL_RAIN 5216 "Cascata de Cristal"
-  "Two hand Staff Mastery": "Two Staff",    // AG_TWOHANDSTAFF 5228 "Perícia com Cajado de Duas Mãos"
 };
 
 // Calc names whose id we pin by hand because the client English name differs
@@ -94,6 +93,19 @@ const SKILL_ID_OVERRIDES = {
   "Powerful Faith": 5238,     // IQ "Mantra da Força"
   "Vigor Explosion": 270,     // MO_EXPLOSIONSPIRITS "Fúria Interior" (client en "Explosion Spirits"; bROWiki)
   "Vigor condensation": 261,  // MO_CALLSPIRITS "Invocar Esfera Espiritual" (client en "Call Spirits")
+  "Two hand Staff Mastery": 5228, // AG_TWOHANDSTAFF "Perícia com Cajado de Duas Mãos" (client renamed en "Two Staff" -> "Two-handed Staff Mastery", broke the alias)
+  "Grand Judgement": 5263,    // IG_GRAND_JUDGEMENT "Lança da Justiça" (client en "Grand Judgment" — calc spells "Judgement")
+  "Auto Guard": 249,          // CR_AUTOGUARD "Bloqueio" (client en is just "Guard")
+  "Ride Peco": 63,            // KN_RIDING "Montaria" (calc toggle "Ride Peco" != client "Peco Peco Ride")
+  "Dancing Lesson": 323,      // DC_DANCINGLESSON "Lições de Dança" (client en "Dance Lessons")
+  "Lesson": 2412,             // WM_LESSON "Domínio Musicial" (client en "Voice Lessons")
+  "Dart Arrow": 324,          // DC_THROWARROW "Estilingue" (Dancer counterpart of "Musical Strike"; client en "Slinging Arrow")
+  "Dance With Wug": 2428,     // WM_DANCE_WITH_WUG "Dança com Lobos" (client en "Dances with Wargs")
+  "Circling Nature": 2423,    // WM_SIRCLEOFNATURE "Sibilo de Eir" (client en "Circle of Nature")
+  "Stage Manner": 5349,       // TR_STAGE_MANNER "Presença de Palco" (client en "Stage Etiquette")
+  "Musical Lesson": 315,      // BA_MUSICALLESSON "Lições de Música" (client en "Music Lessons")
+  "Rush To Windmill": 2381,   // MI_RUSH_WINDMILL "Sinfonia dos Ventos" (client en "Windmill Rush")
+  "Framen": 5284,             // CD_FRAMEN "Flamen" (calc spells "Framen"; client/divine-pride en+pt are "Flamen")
 };
 
 // Calc names that render an 'item' icon instead of a skill icon. The Rune Knight

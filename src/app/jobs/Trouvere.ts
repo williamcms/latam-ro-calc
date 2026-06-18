@@ -166,7 +166,7 @@ export class Trouvere extends Wanderer {
   private readonly atkSkillList4th: AtkSkillModel[] = [
     {
       name: 'Rhythm Shooting',
-      label: '[V3] Rhythm Shooting Lv5',
+      label: '[V2] Rhythm Shooting Lv5',
       value: 'Rhythm Shooting==5',
       acd: 0,
       fct: 0,
@@ -183,15 +183,19 @@ export class Trouvere extends Wanderer {
         const { model, skillLevel, status } = input;
         const baseLevel = model.level;
         const stageMannerLv = this.learnLv('Stage Manner');
+        const mysticMult = this.isSkillActive('Mystic Symphony') ? 2 : 1; // 2nd version: Mystic Symphony doubles the skill's power
 
-        // if (this.isSkillActive('Sonic Brand'))
+        const con = status.totalCon * 2 * stageMannerLv;
+        const ratio = this.isSkillActive('_Debuf_Sonic_Brand')
+          ? skillLevel * 156 + con
+          : skillLevel * 120 + con;
 
-        return (200 + skillLevel * 120 + status.totalCon * 3 * stageMannerLv) * (baseLevel / 100);
+        return mysticMult * ratio * (baseLevel / 100);
       },
     },
     {
       name: 'Rose Blossom',
-      label: '[V3] Rose Blossom Lv5',
+      label: '[V2] Rose Blossom Lv5',
       value: 'Rose Blossom==5',
       acd: 0.15,
       fct: 0.5,
@@ -208,18 +212,17 @@ export class Trouvere extends Wanderer {
         const { model, skillLevel, status } = input;
         const baseLevel = model.level;
         const stageMannerLv = this.learnLv('Stage Manner');
+        const mysticMult = this.isSkillActive('Mystic Symphony') ? 2 : 1; // 2nd version: Mystic Symphony doubles the skill's power
 
-        if (this.isSkillActive('_Debuf_Sonic_Brand')) {
-          const main = ((200 + skillLevel * 2200) + (status.totalCon * 3 * stageMannerLv)) * (baseLevel / 100);
-          const second = ((250 + skillLevel * 3000) + (status.totalCon * 3 * stageMannerLv)) * (baseLevel / 100);
+        // 2nd version: main dmg displays 2 hits + 1 secondary AoE hit. Higher coefficients vs a Sonic Brand-marked target.
+        const main = this.isSkillActive('_Debuf_Sonic_Brand')
+          ? skillLevel * 1000 + status.totalCon * 3 * stageMannerLv
+          : skillLevel * 750 + status.totalCon * 3 * stageMannerLv;
+        const second = this.isSkillActive('_Debuf_Sonic_Brand')
+          ? skillLevel * 750 + status.totalCon * 2 * stageMannerLv
+          : skillLevel * 350 + status.totalCon * 2 * stageMannerLv;
 
-          return main + second;
-        }
-
-        const main = ((200 + skillLevel * 2000) + (status.totalCon * 3 * stageMannerLv)) * (baseLevel / 100);
-        const second = ((250 + skillLevel * 2800) + (status.totalCon * 3 * stageMannerLv)) * (baseLevel / 100);
-
-        return main + second;
+        return mysticMult * (main * 2 + second) * (baseLevel / 100);
       },
     },
   ];
