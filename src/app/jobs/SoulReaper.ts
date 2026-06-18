@@ -150,7 +150,7 @@ export class SoulReaper extends SoulLinker {
     // },
     {
       inputType: 'dropdown',
-      label: 'Total Soul',
+      label: 'Total de Almas', // soul-count input (each collected soul grants +MATK); not a single skill
       name: 'Total Soul',
       dropdown: [
         { label: '-', value: 0, isUse: false },

@@ -92,7 +92,7 @@ export class Ninja extends CharacterBase {
         { label: 'No', value: 0, isUse: false },
       ],
     },
-    ElementCharm,
+    ...ElementCharm,
   ];
   protected readonly _passiveSkillList: PassiveSkillModel[] = [
     {

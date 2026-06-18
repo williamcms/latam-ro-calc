@@ -182,7 +182,7 @@ export class Genetic extends Creator {
   private readonly activeSkillList3rd: ActiveSkillModel[] = [
     CartBoost,
     {
-      label: 'Cart Weight',
+      label: 'Peso do Carrinho',
       name: 'Cart Weight',
       inputType: 'dropdown',
       dropdown: [

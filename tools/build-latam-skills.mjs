@@ -33,7 +33,6 @@ const SKILL_NAME_ALIASES = {
   "Fatal Manace": "Fatal Menace",
   "Metalic Sound": "Metallic Sound",
   "Lightening Bolt": "Lightning Bolt",
-  "Mandragora Howling": "Mandragora Howl",
   "Hack and Slasher": "Hack and Slash",
   "Third Punish": "Third Punishment",
   "Second Judgement": "Second Judgment",
@@ -106,6 +105,36 @@ const SKILL_ID_OVERRIDES = {
   "Musical Lesson": 315,      // BA_MUSICALLESSON "Lições de Música" (client en "Music Lessons")
   "Rush To Windmill": 2381,   // MI_RUSH_WINDMILL "Sinfonia dos Ventos" (client en "Windmill Rush")
   "Framen": 5284,             // CD_FRAMEN "Flamen" (calc spells "Framen"; client/divine-pride en+pt are "Flamen")
+  "Learning Potion": 227,     // AM_LEARNINGPOTION "Pesquisa de Poções" (client en "Potion Research"; calc label "Learn Potion")
+  "Acid Demonstration": 490,  // CR_ACIDDEMONSTRATION "Bomba Ácida" (calc label "Acid Bomb"; same skill as the atk "Acid Bomb")
+  "Bio Cannibalize": 232,     // AM_CANNIBALIZE "Criar Monstro Planta" (client en "Summon Flora")
+  "Two Hand Defending": 5300, // MT_TWOHANDDEF "Defesa com Machado" (client en didn't auto-match)
+  "Mandragora Howling": 2492, // GN_MANDRAGORA "Grito da Mandrágora" — lowest-id "Mandragora Howl" (735 NPC_MANDRAGORA) is a dead icon (404)
+  "Lava Flow": 5006,          // NC_MAGMA_ERUPTION "Erupção de Magma" — lowest-id "Lava Flow" (733 NPC_MAGMA_ERUPTION) is a dead icon (404)
+  "On Magogear": 2255,        // NC_MADOLICENCE "Licença de Pilotagem" (mount-state toggle; reuses the license skill icon)
+  "Power Maximize": 114,      // BS_MAXIMIZE "Amplificar Poder" (calc label "P.Maximize"; client en "Maximize Power")
+  "Lightning Loader": 282,    // SA_LIGHTNINGLOADER "Encantar com Ventania" (client en "Endow Tornado")
+  "Frost Weapon": 281,        // SA_FROSTWEAPON "Encantar com Geada" (client en "Endow Tsunami")
+  "Seismic Weapon": 283,      // SA_SEISMICWEAPON "Encantar com Terremoto" (client en "Endow Quake")
+  "Advanced Book": 274,       // SA_ADVANCEDBOOK "Estudo de Livros" (calc label "Adv Book"; client en "Study")
+  "Auto Spell": 279,          // SA_AUTOSPELL "Desejo Arcano" (client en "Hindsight")
+  "Run": 411,                 // TK_RUN "Corrida" (client en "Sprint")
+  "Seven Wind": 425,          // TK_SEVENWIND "Brisa Leve" (client en "Mild Wind")
+  "Power": 424,               // TK_POWER "Kihop" (calc label "Power"; the (lv*15+10)% ATK buff)
+  "Knowledge of Sun, Moon and Star": 443, // SG_KNOWLEDGE "Transmissão Solar, Lunar e Estelar" (en "Solar, Lunar and Stellar Courier")
+  "Fusion of Sun, Moon and Star": 444,    // SG_FUSION "União Solar, Lunar e Estelar" (calc label was raw Thai "ตัวลอย")
+  "Blessing of Sun": 438,     // SG_SUN_BLESS "Bênção Solar"
+  "Blessing of Moon": 439,    // SG_MOON_BLESS "Bênção Lunar"
+  "Blessing of Star": 440,    // SG_STAR_BLESS "Bênção Estelar"
+  "Eswhoo": 2604,             // SP_SWHOO "Eswhoo" (Soul Reaper; client en "Eswoo")
+  "Silvervine Stem Spear": 5026, // SU_SV_STEMSPEAR "Lança Gateira" (client en "SV Stem Spear")
+  "Silvervine Root Twist": 5029, // SU_SV_ROOTTWIST "Hera Venenosa" (client en "SV Root Twist")
+  "Arclouse Dash": 5035,      // SU_ARCLOUSEDASH "Impulso de Arclouse" (client en "Arclouze Dash")
+  "Frash Shrimp": 5041,       // SU_FRESHSHRIMP "Camarão Fresquinho" (calc typo "Frash"; client en "Fresh Shrimp")
+  "Power of Flock": 5045,     // SU_POWEROFFLOCK "Intimidar" (client en "Power Of Lock")
+  "Sprit Of Life": 5052,      // SU_SPIRITOFLIFE "Invocação da Fauna" (client en "Spirit Of Life")
+  "Spirit of Savage": 5046,   // SU_SVG_SPIRIT "Ataque Selvagem" (client en "Sprit Of Savage")
+  "Wrath of": 437,            // SG_STAR_ANGER "Fúria Estelar" — calc's ATK bonus (BaseLv+LUK+DEX+STR-vs-Large)/3 uniquely uses FOR, which only Fúria Estelar does
 };
 
 // Calc names that render an 'item' icon instead of a skill icon. The Rune Knight

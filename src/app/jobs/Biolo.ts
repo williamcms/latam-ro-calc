@@ -1,4 +1,5 @@
 import { JOB_4_MAX_JOB_LEVEL, JOB_4_MIN_MAX_LEVEL } from '../app-config';
+import { ElementType } from '../constants';
 import { Genetic } from './Genetic';
 import { ActiveSkillModel, AtkSkillFormulaInput, AtkSkillModel, PassiveSkillModel } from './_character-base.abstract';
 import { ClassName } from './_class-name';
@@ -159,56 +160,50 @@ export class Biolo extends Genetic {
   protected override maxJob = JOB_4_MAX_JOB_LEVEL;
 
   private readonly classNames4th = [ClassName.Only_4th, ClassName.Biolo];
-  private readonly atkSkillList4th: AtkSkillModel[] = [
-    {
-      name: 'Explosive Powder',
-      label: '[V3] Explosive Powder Lv5',
-      value: 'Explosive Powder==5',
-      acd: 0.25,
-      fct: 0,
-      vct: 0,
-      cd: 0.7,
-      isMelee: true,
-      totalHit: () => this.isSkillActive('Research Report') ? 5 : 3,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { model, skillLevel, status } = input;
-        const { totalPow } = status;
-        const baseLevel = model.level;
-        if (this.isSkillActive('Research Report')) {
-          return (400 + skillLevel * 550 + totalPow * 10) * (baseLevel / 100);
-        }
 
-        return (400 + skillLevel * 450 + totalPow * 7) * (baseLevel / 100);
-      },
-    },
-    {
-      name: 'Mayhemic Thorns',
-      label: '[V3] Mayhemic Thorns Lv10',
-      value: 'Mayhemic Thorns==10',
-      acd: 0.25,
+  // Acidified Zone (2nd version): one ranged-physical skill per element, 5 hits.
+  // Base ratio = lv*400 + POW*(1 + Bionic Pharmacy lv). Research Report multiplies the
+  // whole thing x1.5; if RR is up AND the target is Formless/Plant, the POW part is also
+  // x1.5 (so x1.5 inside and x1.5 overall). Each consumes its matching Acid Bottle.
+  private acidifiedZoneFormula = (input: AtkSkillFormulaInput): number => {
+    const { model, skillLevel, status, monster } = input;
+    const { totalPow } = status;
+    const baseLevel = model.level;
+    const bionicLv = this.learnLv('Bionic Pharmacy');
+
+    const researchReport = this.isSkillActive('Research Report');
+    const powMult = researchReport && monster.isRace('formless', 'plant') ? 1.5 : 1;
+    const overallMult = researchReport ? 1.5 : 1;
+    const powPart = totalPow * (1 + bionicLv) * powMult;
+
+    return (skillLevel * 400 + powPart) * (baseLevel / 100) * overallMult;
+  };
+
+  private acidifiedZone(name: AtkSkillModel['name'], element: ElementType): AtkSkillModel {
+    return {
+      name,
+      label: `[V2] ${name} Lv5`,
+      value: `${name}==5`,
+      acd: 0.5,
       fct: 0.5,
-      vct: 1.5,
-      cd: 0.7,
-      totalHit: () => this.isSkillActive('Research Report') ? 5 : 3,
-      canCri: true,
-      baseCriPercentage: 1,
-      criDmgPercentage: 0.5,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { model, skillLevel, status } = input;
-        const { totalPow } = status;
-        const baseLevel = model.level;
-        if (this.isSkillActive('Research Report')) {
-          return (250 + skillLevel * 300 + totalPow * 10) * (baseLevel / 100);
-        }
+      vct: 1,
+      cd: 1,
+      element,
+      totalHit: 5,
+      formula: this.acidifiedZoneFormula,
+    };
+  }
 
-        return (200 + skillLevel * 250 + totalPow * 7) * (baseLevel / 100);
-      },
-    },
+  private readonly atkSkillList4th: AtkSkillModel[] = [
+    this.acidifiedZone('Acidified Zone Earth', ElementType.Earth),
+    this.acidifiedZone('Acidified Zone Wind', ElementType.Wind),
+    this.acidifiedZone('Acidified Zone Fire', ElementType.Fire),
+    this.acidifiedZone('Acidified Zone Water', ElementType.Water),
   ];
   private readonly activeSkillList4th: ActiveSkillModel[] = [
     {
       name: '_Biolo_Monster_List',
-      label: 'Wooden',
+      label: 'Invocação',
       inputType: 'dropdown',
       dropdown: genBioloMonsterSkillList(),
     },
@@ -222,7 +217,21 @@ export class Biolo extends Genetic {
       ],
     },
   ];
-  private readonly passiveSkillList4th: PassiveSkillModel[] = [];
+  private readonly passiveSkillList4th: PassiveSkillModel[] = [
+    {
+      name: 'Bionic Pharmacy',
+      label: 'Bionic Pharmacy',
+      inputType: 'dropdown',
+      dropdown: [
+        { label: '-', value: 0, isUse: false },
+        { label: 'Lv 1', value: 1, isUse: true },
+        { label: 'Lv 2', value: 2, isUse: true },
+        { label: 'Lv 3', value: 3, isUse: true },
+        { label: 'Lv 4', value: 4, isUse: true },
+        { label: 'Lv 5', value: 5, isUse: true },
+      ],
+    },
+  ];
 
   constructor() {
     super();

@@ -226,8 +226,10 @@ export class Oboro extends Ninja {
     S16thNight,
     DistortedCrescent,
     {
-      label: '[Debuf] Cross Wound',
+      label: 'Ferida Cruzada', // Cross Wound debuff inflicted by Impacto Cruzado (Cross Slash) — bROwiki
       name: 'Cross Wound',
+      icon: 3004, // KO_JYUMONJIKIRI (Impacto Cruzado) — the skill that inflicts the debuff
+      isDebuff: true,
       inputType: 'selectButton',
       dropdown: [
         { label: 'Yes', value: 1, isUse: true },

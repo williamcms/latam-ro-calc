@@ -259,7 +259,7 @@ export class Sorcerer extends Scholar {
   private readonly activeSkillList3rd: ActiveSkillModel[] = [
     {
       name: '_Sorcerer_Elemental_Spirit',
-      label: 'Elemental Spirit',
+      label: 'Espírito Elemental',
       inputType: 'dropdown',
       dropdown: [
         { label: '-', isUse: false, value: 0 },

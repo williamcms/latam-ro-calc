@@ -418,6 +418,12 @@ export class Mechanic extends Whitesmith {
   }
 
   protected get abrLv() {
-    return this.activeSkillLv('_Meister_ABR_List');
+    // Two mutually-exclusive ABR toggles (only one active at a time). Map back to the
+    // MeisterMonster id so isBattleWarrior/isDualCannon keep working unchanged:
+    // 1 = Battle Warrior (Fabricar Soldado), 2 = Dual Cannon (Fabricar Canhoneiro).
+    if (this.activeSkillLv('_Meister_ABR_Warrior')) return 1;
+    if (this.activeSkillLv('_Meister_ABR_Cannon')) return 2;
+
+    return 0;
   }
 }
