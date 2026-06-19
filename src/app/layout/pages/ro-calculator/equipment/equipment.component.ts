@@ -183,13 +183,23 @@ export class EquipmentComponent implements OnChanges, OnInit {
     // console.log({ mainItemId, e2, e3, e4 });
     const clearModel = () => {
       for (const idx of [1, 2, 3, 4]) {
-        const enchantList = this[`enchant${idx}List`] as DropdownModel[];
+        const listKey = `enchant${idx}List`;
+        const enchantList = this[listKey] as DropdownModel[];
         const property = `enchant${idx}Id`;
         const currentEnchantValue = this[property]
         if (this.itemId && currentEnchantValue != null && !enchantList.find((a) => a.value === currentEnchantValue)) {
-          // console.log({ property })
-          this[property] = undefined;
-          this.onSelectItem(property);
+          // The predefined enchant table is kRO-derived and can omit enchants a
+          // LATAM item legitimately carries (e.g. a replay-imported U-Mental on an
+          // Illusion accessory). If the set value is a real enchant item, surface
+          // it in this slot's list instead of wiping the import; only clear values
+          // that aren't a real enchant.
+          const ench = this.items?.[currentEnchantValue as unknown as number];
+          if (ench && this.mapEnchant?.has(ench.aegisName)) {
+            this[listKey] = [...enchantList, { label: ench.name, value: ench.id }];
+          } else {
+            this[property] = undefined;
+            this.onSelectItem(property);
+          }
         }
       }
     };

@@ -108,12 +108,20 @@ export class EquipmentShadowComponent implements OnInit, OnChanges {
     // console.log({ mainItemId, e2, e3, e4 });
     const clearModel = () => {
       for (const idx of [3, 4]) {
-        const enchantList = this[`enchant${idx}List`] as DropdownModel[];
+        const listKey = `enchant${idx}List`;
+        const enchantList = this[listKey] as DropdownModel[];
         const property = `enchant${idx}Id`;
         const currentEnchantValue = this[property];
         if (this.itemId && currentEnchantValue != null && !enchantList.find((a) => a.value === currentEnchantValue)) {
-          this[property] = undefined;
-          this.onSelectItem(property);
+          // Keep a real enchant the item legitimately carries (e.g. replay-imported)
+          // even when the kRO-derived enchant table omits it; only clear non-enchants.
+          const ench = this.items?.[currentEnchantValue as unknown as number];
+          if (ench && this.mapEnchant?.has(ench.aegisName)) {
+            this[listKey] = [...enchantList, { label: ench.name, value: ench.id }];
+          } else {
+            this[property] = undefined;
+            this.onSelectItem(property);
+          }
         }
       }
     };
