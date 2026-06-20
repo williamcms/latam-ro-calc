@@ -38,6 +38,14 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Secrets — Divine-Pride logged-in session for LATAM-gated fetches. NEVER commit.
+.dp-cookies.json
+.env
+.env.local
+
+# Divine-Pride scratch HTML dumps (add-ro-item / add-ro-monster skills)
+.dp_*.html
+
 # Compiled files
 layout.css
 src/assets/demo/styles/badges.css
