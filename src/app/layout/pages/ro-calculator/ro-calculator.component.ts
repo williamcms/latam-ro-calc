@@ -2257,7 +2257,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     skillAspd: 'VelAtq (hab.)', skillAspdPercent: 'VelAtq % (hab.)', decreaseSkillAspdPercent: 'Reduz VelAtq (hab.)',
     acd: 'Pós-conjuração', fct: 'Conj. Fixa', fctPercent: 'Conj. Fixa %',
     vct: 'Conj. Variável', vct_inc: 'Conj. Variável (aumento)', vctBySkill: 'Conj. Variável (hab.)',
-    cd: 'Redução de Recarga',
+    cd: 'Recarga',
     hit: 'Precisão', perfectHit: 'Precisão Perfeita', cri: 'Crítico', criDmg: 'Dano crítico',
     perfectDodge: 'Esquiva perfeita', flee: 'Esquiva', forceCri: 'Força crítico',
     ignore_size_penalty: 'Ignora penalidade de tamanho', p_infiltration: 'Infiltração física',
@@ -2301,7 +2301,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     }
     // Combo bonuses
     if ((m = key.match(/^(vct|fct|cd)__(.+)$/))) {
-      return `${this.itemBonusLabels[m[1]]} de ${sub[m[2]] ?? m[2]}`;
+      return `Redução de ${this.itemBonusLabels[m[1]]} de ${sub[m[2]] ?? m[2]}`;
     }
     return undefined;
   }
