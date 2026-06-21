@@ -83,12 +83,36 @@ describe('calcSkillAspd', () => {
   });
 
   it('per-skill cooldown reduction lowers the reported cooldown', () => {
+    // item.json keys reductions by skill id; Arrow Storm = 2233.
     const r = calcSkillAspd({
-      skillData: skill({ acd: 0, cd: 5 }),
-      totalEquipStatus: { ...equip, cd__TestSkill: 2 },
+      skillData: skill({ name: 'Arrow Storm', acd: 0, cd: 5 }),
+      totalEquipStatus: { ...equip, cd__2233: 2 },
       status,
       skillLevel: 5,
     });
     expect(r.reducedCd).toBe(3);
+  });
+
+  // Characterization: locks every per-skill timing reduction, each keyed by the
+  // skill ID (`cd__<id>`, `vct__<id>`, ...). Arrow Storm = 2233.
+  it('locks all six per-skill timing reductions keyed by skill id', () => {
+    const r = calcSkillAspd({
+      skillData: skill({ name: 'Arrow Storm', acd: 1, cd: 5, fct: 2, vct: 3 }),
+      totalEquipStatus: {
+        ...equip,
+        'cd__2233': 1,
+        'vct__2233': 20, // 20% variable-cast reduction
+        'fix_vct__2233': 0.5, // 0.5s fixed variable-cast reduction
+        'fct__2233': 0.4,
+        'fctPercent__2233': 10, // 10% fixed-cast reduction
+        'acd__2233': 0.2,
+      },
+      status,
+      skillLevel: 10,
+    });
+    expect(r.reducedCd).toBe(4); // 5 - 1
+    expect(r.reducedVct).toBe(2); // (3 - 0.5) * 0.8
+    expect(r.reducedFct).toBe(1.4401); // (2 - 0.4) * 0.9, rounded up at 4dp by roundUp
+    expect(r.reducedAcd).toBe(0.8); // 1 - 0.2
   });
 });

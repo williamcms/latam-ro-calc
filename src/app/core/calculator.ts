@@ -11,6 +11,7 @@ import {
 import { SKILL_NAME } from 'src/app/constants/skill-name';
 import { Monster, Weapon } from 'src/app/domain';
 import { CharacterBase } from 'src/app/jobs';
+import { resolveSkillById } from 'src/app/skills';
 import { createRawTotalBonus, floor, isNumber, round } from 'src/app/utils';
 import { ChanceModel } from 'src/app/models/chance-model';
 import { BasicAspdModel, BasicDamageSummaryModel, MiscModel, SkillAspdModel, SkillDamageSummaryModel } from 'src/app/models/damage-summary.model';
@@ -1028,7 +1029,7 @@ export class Calculator {
       this._chanceList.push({
         name: item.name,
         label: `${item.name}`,
-        label2: `[ ${chances.map((c) => `${c} ${c.startsWith('cd__') ? '-' : '+'}${chance[c]}`).join(', ')} ]`,
+        label2: `[ ${chances.map((c) => `${resolveSkillById(Number(c))?.name ?? c} ${c.startsWith('cd__') ? '-' : '+'}${chance[c]}`).join(', ')} ]`,
         bonus: chance,
       });
     }

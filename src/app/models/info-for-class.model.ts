@@ -6,6 +6,19 @@ import { ElementType } from '../constants/element-type.const';
 import { Monster, Weapon } from '../domain';
 import { SKILL_NAME } from '../constants/skill-name';
 
+/** A skill referenced from a formula: either its name, or a skill definition/const
+ *  that carries a `name` (lets formulas read other skills' state without `this`). */
+export type SkillRef = SKILL_NAME | { name: SKILL_NAME };
+
+/** Cross-skill state for damage formulas, replacing the `this.isSkillActive` /
+ *  `this.activeSkillLv` / `this.learnLv` helpers as skills move out of the job
+ *  classes into standalone definitions. */
+export interface SkillStateCtx {
+  isActive(skill: SkillRef): boolean;
+  activeLevel(skill: SkillRef): number;
+  learnedLevel(skill: SkillRef): number;
+}
+
 export interface InfoForClass {
   weapon: Weapon;
   ammoElement: ElementType;
@@ -16,6 +29,7 @@ export interface InfoForClass {
   equipmentBonus: Partial<Record<ItemTypeEnum, EquipmentSummaryModel>>;
   skillName: SKILL_NAME;
   cometMultiplier: number;
+  skills: SkillStateCtx;
 }
 
 export interface AdditionalBonusInput {

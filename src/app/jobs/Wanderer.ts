@@ -1,7 +1,7 @@
 import { ClassName } from './_class-name';
-import { ActiveSkillModel, AtkSkillFormulaInput, AtkSkillModel, PassiveSkillModel } from './_character-base.abstract';
+import { ActiveSkillModel, AtkSkillModel, PassiveSkillModel } from './_character-base.abstract';
+import { ARROW_VULCAN, METALIC_SOUND, REVERBERATION, SEVERE_RAINSTORM } from '../skills/shared-skills';
 import { AdditionalBonusInput, InfoForClass } from '../models/info-for-class.model';
-import { WeaponTypeName } from '../constants/weapon-type-mapper';
 import {
   CirclingNatureFn,
   DanceWithWug,
@@ -13,7 +13,6 @@ import {
   SevereRainstormFn,
   SongOfMana,
 } from '../constants/share-passive-skills';
-import { ElementType } from '../constants/element-type.const';
 import { BragisPoemFn, SwingDanceFn } from '../constants/share-active-skills';
 import { Bard } from './Bard';
 
@@ -95,101 +94,7 @@ export class Wanderer extends Bard {
   protected override JobBonusTable = jobBonusTable;
 
   private readonly classNames3rd = [ClassName.Only_3rd, ClassName.Wanderer];
-  private readonly atkSkillList3rd: AtkSkillModel[] = [
-    {
-      name: 'Arrow Vulcan',
-      label: 'Arrow Vulcan Lv10',
-      value: 'Arrow Vulcan==10',
-      acd: 0.5,
-      fct: 0.5,
-      vct: 1.5,
-      cd: 1.5,
-      hit: 9,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { skillLevel, model } = input;
-        const baseLevel = model.level;
-
-        return (500 + skillLevel * 100) * (baseLevel / 100);
-      },
-    },
-    {
-      name: 'Metalic Sound',
-      label: 'Metalic Sound Lv10',
-      value: 'Metalic Sound==10',
-      acd: 0.5,
-      fct: 0,
-      vct: 4,
-      cd: 2.5,
-      hit: 2,
-      isMatk: true,
-      element: ElementType.Neutral,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { skillLevel, model } = input;
-        const baseLevel = model.level;
-        const lessonLv = this.bonuses.learnedSkillMap.get('Lesson') || 0;
-
-        return (skillLevel * 120 + lessonLv * 60) * (baseLevel / 100);
-      },
-      finalDmgFormula(input) {
-        return input.damage * 2;
-      },
-    },
-    {
-      name: 'Severe Rainstorm',
-      label: 'Severe Rainstorm',
-      value: 'Severe Rainstorm==5',
-      values: [
-        '[Improved] Severe Rainstorm==1',
-        '[Improved] Severe Rainstorm==2',
-        '[Improved] Severe Rainstorm==3',
-        '[Improved] Severe Rainstorm==4',
-        '[Improved] Severe Rainstorm==5',
-      ],
-      acd: 1,
-      fct: 0.5,
-      vct: (lv) => 1 + lv * 0.5,
-      cd: (lv) => 4.5 + lv * 0.5,
-      totalHit: 12,
-      levelList: [
-        { label: 'Temporal de Flechas Lv1', value: 'Severe Rainstorm==1' },
-        { label: 'Temporal de Flechas Lv2', value: 'Severe Rainstorm==2' },
-        { label: 'Temporal de Flechas Lv3', value: 'Severe Rainstorm==3' },
-        { label: 'Temporal de Flechas Lv4', value: 'Severe Rainstorm==4' },
-        { label: 'Temporal de Flechas Lv5', value: 'Severe Rainstorm==5' },
-      ],
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { weapon, status, skillLevel, model } = input;
-        const baseLevel = model.level;
-        const { totalDex, totalAgi } = status;
-        const weaType = weapon.data.typeName;
-        const weaMultiMap: Partial<Record<WeaponTypeName, number>> = {
-          bow: 100,
-          instrument: 120,
-          whip: 120,
-        };
-        const extra = weaMultiMap[weaType] || 0;
-
-        return ((totalDex + totalAgi) / 2 + skillLevel * extra) * (baseLevel / 100);
-      },
-    },
-    {
-      name: 'Reverberation',
-      label: 'Reverberation Lv5',
-      value: 'Reverberation==5',
-      values: ['[Improved] Reverberation==5'],
-      acd: 0.5,
-      fct: 0.5,
-      vct: 1.5,
-      cd: 0,
-      isMatk: true,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { skillLevel, model } = input;
-        const baseLevel = model.level;
-
-        return (700 + skillLevel * 300) * (baseLevel / 100);
-      },
-    },
-  ];
+  private readonly atkSkillList3rd: AtkSkillModel[] = [ARROW_VULCAN, METALIC_SOUND, SEVERE_RAINSTORM, REVERBERATION];
 
   private readonly activeSkillList3rd: ActiveSkillModel[] = [SwingDanceFn(), BragisPoemFn()];
 

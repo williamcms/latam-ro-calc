@@ -4,6 +4,7 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Observable, Subject, Subscription, catchError, debounceTime, filter, finalize, forkJoin, mergeMap, of, switchMap, take, tap, throwError } from 'rxjs';
 import { PresetModel } from 'src/app/api-services';
 import { RoService } from 'src/app/api-services/ro.service';
+import { SKILL_DESC_BY_ID, SKILL_ID_BY_NAME, resolveSkillById, resolveSkillMeta } from 'src/app/skills';
 import { AllowedCompareItemTypes } from 'src/app/app-config';
 import {
   AllowLeftWeaponMapper,
@@ -341,9 +342,6 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
 
   equipableItems: (DropdownModel & { id: number; position: string; })[] = [];
   offensiveSkills: (DropdownModel & { icon?: number })[] = [];
-  latamSkills: Record<string, { id: number; name: string; iconType?: 'item' | 'skill' }> = {};
-  /** skill id -> pt-BR client skill description (raw ^RRGGBB text) */
-  latamSkillDesc: Record<string, string> = {};
 
   // --- Replay (.rrf) import modal ---
   showReplayImport = false;
@@ -561,15 +559,11 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       this.roService.getMonsters<Record<number, MonsterModel>>(),
       this.roService.getHpSpTable<HpSpTable>(),
       this.roService.getLatamClasses(),
-      this.roService.getLatamSkills(),
-      this.roService.getLatamSkillDesc(),
     ]).pipe(
-      tap(([items, monsters, hpSpTable, latamClasses, latamSkills, latamSkillDesc]) => {
+      tap(([items, monsters, hpSpTable, latamClasses]) => {
         this.items = items;
         this.monsterDataMap = monsters;
         this.hpSpTable = hpSpTable;
-        this.latamSkills = latamSkills;
-        this.latamSkillDesc = latamSkillDesc;
 
         // Hide classes unreleased on LATAM (no job icon in the client GRF).
         const latamClassSet = new Set(latamClasses);
@@ -824,7 +818,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     this.sizeTable = buildSizeTable(this.totalSummary);
     ({ classTable: this.classTable, peneClassTable: this.peneClassTable } = buildMonsterTypeTables(this.totalSummary));
     this.atkTypeTable = buildAtkTypeTable(this.totalSummary);
-    this.skillMultiplierTable = buildSkillMultiplierTable(this.totalSummary, (name) => this.resolveSkill(name));
+    this.skillMultiplierTable = buildSkillMultiplierTable(this.totalSummary, (key) => this.resolveSkillKey(key));
   }
 
   calculateToSelectedMonsters(needCalcAll = true) {
@@ -1207,7 +1201,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     const build = (skills: { name: string; dropdown: SkillModel[] }[]) => {
       const out: Record<string, number> = {};
       for (const s of skills) {
-        const id = this.latamSkills[s.name]?.id;
+        const id = SKILL_ID_BY_NAME[s.name];
         const level = id ? learnedSkills[id] : 0;
         if (!level) continue;
         const value = pick(s.dropdown, level);
@@ -1348,11 +1342,20 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     this.isAllowLeftWeaponByClass = AllowLeftWeaponMapper[this.selectedCharacter.className] || false;
   }
 
-  /** Resolve a calc skill name to its LATAM { id, pt-BR name }. The id is baked
-   *  per skill at build time (tools/build-latam-skills.mjs -> latam-skills.json),
-   *  keyed by the calc's own skill name, so this is a direct exact lookup. */
+  /** Resolve a calc skill name to its LATAM { id, pt-BR name } from the static
+   *  Skill Catalog (src/app/skills). Names without an in-game id (internal markers
+   *  / skills missing from the client map) return undefined and keep their English
+   *  label with no icon, matching the previous behavior. */
   private resolveSkill(name: string): { id: number; name: string; iconType?: 'item' | 'skill' } | undefined {
-    return this.latamSkills[name];
+    const meta = resolveSkillMeta(name);
+    if (!meta || meta.id === undefined) return undefined;
+    return { id: meta.id, name: meta.label ?? name, iconType: meta.iconType };
+  }
+
+  /** Resolve a bonus/summary key that is a bare skill id (item.json now keys skill
+   *  bonuses by id) to its pt-BR skill. Non-numeric keys (stats) return undefined. */
+  private resolveSkillKey(key: string): { id: number; name: string; iconType?: 'item' | 'skill' } | undefined {
+    return /^\d+$/.test(key) ? resolveSkillById(Number(key)) : undefined;
   }
 
   private setClassSkill() {
@@ -2223,7 +2226,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   private buildItemBonusRows(bonus: Record<string, any>): { label: string; icon?: number; display: string; isSkill: boolean }[] {
     const fmt = (v: number) => (v > 0 ? `+${v}` : `${v}`);
     const rows = Object.entries(bonus || {}).map(([key, value]) => {
-      const skill = this.resolveSkill(key);
+      const skill = this.resolveSkillKey(key);
       if (skill) {
         const display = typeof value === 'number' ? `${fmt(value)}%` : `${value}`;
         return { label: skill.name, icon: skill.id, display, isSkill: true };
@@ -2359,8 +2362,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     const cached = this.buffTooltipCache.get(buff.name);
     if (cached !== undefined) return cached;
 
-    const descReady = Object.keys(this.latamSkillDesc).length > 0;
-    const desc = buff.icon ? prettyItemDesc(this.latamSkillDesc[buff.icon]) : '';
+    const desc = buff.icon ? prettyItemDesc(SKILL_DESC_BY_ID[buff.icon]) : '';
 
     let html: string;
     if (desc) {
@@ -2381,8 +2383,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       html = `${title}${debuff}${lines.length ? lines.join('') : '<div>—</div>'}`;
     }
 
-    // only memoise once the description data has loaded (avoid caching the fallback)
-    if (descReady) this.buffTooltipCache.set(buff.name, html);
+    this.buffTooltipCache.set(buff.name, html);
     return html;
   }
 
@@ -2449,7 +2450,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     if (itemId && this.items[itemId]) {
       return { label: this.items[itemId].name, icon: itemId, iconType: 'item', value };
     }
-    const skill = this.resolveSkill(srcKey);
+    const skill = this.resolveSkillKey(srcKey);
     if (skill) {
       return { label: skill.name, icon: skill.id, iconType: skill.iconType ?? 'skill', value };
     }

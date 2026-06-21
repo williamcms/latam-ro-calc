@@ -1,11 +1,11 @@
 import { environment } from 'src/environments/environment';
 import { AspdPotionFixBonus } from '../constants';
 import { ElementType } from '../constants/element-type.const';
-import { OFFENSIVE_SKILL_NAMES, SKILL_NAME } from '../constants/skill-name';
+import { SKILL_NAME } from '../constants/skill-name';
 import { WeaponTypeName } from '../constants/weapon-type-mapper';
 import { Weapon } from '../domain';
 import { EquipmentSummaryModel } from '../models/equipment-summary.model';
-import { AdditionalBonusInput, InfoForClass } from '../models/info-for-class.model';
+import { AdditionalBonusInput, InfoForClass, SkillRef, SkillStateCtx } from '../models/info-for-class.model';
 import { sortSkill } from '../utils';
 import { AspdTable } from './_aspd-table';
 import { ClassName } from './_class-name';
@@ -28,7 +28,7 @@ export interface DefForCalcModel {
 
 export interface AtkSkillModel {
   label: string;
-  name: typeof OFFENSIVE_SKILL_NAMES[number];
+  name: SKILL_NAME;
   value: string;
   /** ragassets skill-icon id, attached at runtime from the LATAM skill map. */
   icon?: number;
@@ -293,6 +293,18 @@ export abstract class CharacterBase {
 
   protected activeSkillLv(skillName: SKILL_NAME) {
     return this.bonuses.usedSkillMap.get(skillName) || 0;
+  }
+
+  /** Cross-skill state passed into damage formulas, so a (standalone) skill
+   *  definition can read another skill's state without a `this` reference. Backed
+   *  by the same name-keyed bonus maps as isSkillActive/activeSkillLv/learnLv. */
+  get skillState(): SkillStateCtx {
+    const nameOf = (s: SkillRef): SKILL_NAME => (typeof s === 'string' ? s : s.name);
+    return {
+      isActive: (s) => this.bonuses.activeSkillNames.has(nameOf(s)),
+      activeLevel: (s) => this.bonuses.usedSkillMap.get(nameOf(s)) || 0,
+      learnedLevel: (s) => this.bonuses.learnedSkillMap.get(nameOf(s)) || 0,
+    };
   }
 
   setLearnSkills(a: { activeSkillIds: number[]; passiveSkillIds: number[]; }) {

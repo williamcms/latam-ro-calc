@@ -5,6 +5,7 @@ import { ItemModel } from '../../../../models/item.model';
 import { Observable, Subject, Subscription, debounceTime, tap } from 'rxjs';
 import { LayoutService } from '../../../service/app.layout.service';
 import { ItemShopService } from '../item-shop.service';
+import { SKILL_ID_BY_NAME } from 'src/app/skills';
 
 const positions: DropdownModel[] = [
   { value: 'weaponList', label: 'Arma' },
@@ -167,17 +168,19 @@ export class ItemSearchComponent implements OnInit, OnDestroy {
       if (selectedPositions.size > 0 && !selectedPositions.has(equipableItem.position)) continue;
       let isFoundCD = false;
       if (this.selectedOffensiveSkills?.length > 0) {
+        // item.script keys skill bonuses by id; selected skills are names.
+        const skillIds = this.selectedOffensiveSkills.map((skillName) => SKILL_ID_BY_NAME[skillName]);
         if (isIncludeCdReduction) {
-          isFoundCD = this.selectedOffensiveSkills.some((skillName) => item.script[`cd__${skillName}`]);
+          isFoundCD = skillIds.some((id) => item.script[`cd__${id}`]);
         } else {
-          const found = this.selectedOffensiveSkills.some(
-            (skillName) =>
-              item.script[skillName] ||
-              item.script[`chance__${skillName}`] ||
-              item.script[`cd__${skillName}`] ||
-              item.script[`vct__${skillName}`] ||
-              item.script[`fct__${skillName}`] ||
-              item.script[`fix_vct__${skillName}`],
+          const found = skillIds.some(
+            (id) =>
+              item.script[`${id}`] ||
+              item.script[`chance__${id}`] ||
+              item.script[`cd__${id}`] ||
+              item.script[`vct__${id}`] ||
+              item.script[`fct__${id}`] ||
+              item.script[`fix_vct__${id}`],
           );
           if (!found) continue;
         }

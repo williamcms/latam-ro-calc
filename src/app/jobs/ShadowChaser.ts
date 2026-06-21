@@ -1,5 +1,6 @@
 import { ClassName } from './_class-name';
 import { ActiveSkillModel, AtkSkillFormulaInput, AtkSkillModel, PassiveSkillModel } from './_character-base.abstract';
+import { ARROW_STORM } from '../skills/shared-skills';
 import { DarkClawFn, NoLimitFn, ShieldSpellFn } from '../constants/share-active-skills';
 import { InfoForClass } from '../models/info-for-class.model';
 import { ElementType } from '../constants/element-type.const';
@@ -143,23 +144,7 @@ export class ShadowChaser extends Stalker {
         return (1 + skillLevel) * (totalDex / 2) * (jobLevel / 10) * (baseLevel / 120);
       },
     },
-    {
-      name: 'Arrow Storm',
-      label: 'Arrow Storm Lv10',
-      value: 'Arrow Storm==10',
-      acd: 0,
-      fct: 0.3,
-      vct: 2,
-      cd: 3.2,
-      hit: 3,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { model, skillLevel } = input;
-        const baseLevel = model.level;
-        const fearBreezeBonus = this.isSkillActive('Fear Breeze') ? 70 : 0;
-
-        return (200 + (180 + fearBreezeBonus) * skillLevel) * (baseLevel / 100);
-      },
-    },
+    ARROW_STORM,
     {
       name: 'Psychic Wave',
       label: 'Psychic Wave',

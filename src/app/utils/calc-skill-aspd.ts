@@ -2,6 +2,7 @@ import { AtkSkillModel } from '../jobs/_character-base.abstract';
 import { SkillAspdModel } from '../models/damage-summary.model';
 import { EquipmentSummaryModel } from '../models/equipment-summary.model';
 import { StatusSummary } from '../models/status-summary.model';
+import { SKILL_ID_BY_NAME } from '../skills';
 import { floor } from './floor';
 import { round, roundUp } from './round';
 
@@ -28,12 +29,15 @@ export const calcSkillAspd = (params: {
     skillVct = 0;
   }
 
-  const reduceSkillCd = totalEquipStatus[`cd__${name}`] || 0;
-  const reduceSkillVct = totalEquipStatus[`vct__${name}`] || 0;
-  const reduceSkillVctFix = totalEquipStatus[`fix_vct__${name}`] || 0;
-  const reduceSkillFct = totalEquipStatus[`fct__${name}`] || 0;
-  const reduceSkillFctPercent = totalEquipStatus[`fctPercent__${name}`] || 0;
-  const reduceSkillAcd = totalEquipStatus[`acd__${name}`] || 0;
+  // item.json keys cast/cooldown reductions by skill id; fall back to the name for
+  // skills without a catalog id yet.
+  const id = SKILL_ID_BY_NAME[name] ?? name;
+  const reduceSkillCd = totalEquipStatus[`cd__${id}`] || 0;
+  const reduceSkillVct = totalEquipStatus[`vct__${id}`] || 0;
+  const reduceSkillVctFix = totalEquipStatus[`fix_vct__${id}`] || 0;
+  const reduceSkillFct = totalEquipStatus[`fct__${id}`] || 0;
+  const reduceSkillFctPercent = totalEquipStatus[`fctPercent__${id}`] || 0;
+  const reduceSkillAcd = totalEquipStatus[`acd__${id}`] || 0;
 
   const { acd, vct, vct_inc = 0, fct, fctPercent, vctBySkill = 0 } = totalEquipStatus;
   const { totalDex, totalInt } = status;

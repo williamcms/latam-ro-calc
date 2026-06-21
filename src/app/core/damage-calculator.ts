@@ -7,6 +7,7 @@ import { EquipmentSummaryModel } from 'src/app/models/equipment-summary.model';
 import { InfoForClass } from 'src/app/models/info-for-class.model';
 import { MainModel } from 'src/app/models/main.model';
 import { StatusSummary } from 'src/app/models/status-summary.model';
+import { SKILL_ID_BY_NAME } from 'src/app/skills';
 import { calcDmgDps, calcSkillAspd, floor, isSkillCanEDP, round } from 'src/app/utils';
 
 interface DamageResultModel {
@@ -253,6 +254,7 @@ export class DamageCalculator {
       skillName: this.skillName,
       ammoElement: this.ammoPropertyAtk,
       cometMultiplier: this.getCometMultiplier(),
+      skills: this._class.skillState,
     };
   }
 
@@ -562,7 +564,9 @@ export class DamageCalculator {
   }
 
   private getSkillBonus(skillName: string) {
-    return this.totalBonus[skillName] || 0;
+    // item.json keys skill bonuses by id; fall back to the name for skills that have
+    // no catalog id yet (and for non-skill bonus keys that share this lookup).
+    return this.totalBonus[SKILL_ID_BY_NAME[skillName] ?? skillName] || 0;
   }
 
   private getAtkGroupA(params: { totalAtk: number; }) {

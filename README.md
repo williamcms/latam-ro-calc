@@ -77,7 +77,8 @@ tools/           # scripts de build da base LATAM (itens, monstros, habilidades,
 ```
 
 A pasta `tools/` contém os scripts que geram a base de dados LATAM (`build-latam-db.mjs`,
-`build-latam-skills.mjs`, etc.) a partir das fontes do jogo.
+`build-latam-monsters.mjs`, etc.) a partir das fontes do jogo. As habilidades (nomes,
+descrições e ids) ficam no catálogo estático em `src/app/skills/`.
 
 ## Deploy
 

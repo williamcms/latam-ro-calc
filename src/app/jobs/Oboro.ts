@@ -1,5 +1,6 @@
 import { ClassName } from './_class-name';
 import { ActiveSkillModel, AtkSkillFormulaInput, AtkSkillModel, PassiveSkillModel } from './_character-base.abstract';
+import { CROSS_SLASH, CROSS_WOUND } from '../skills/shared-skills';
 import { Ninja } from './Ninja';
 import { ShadowWarrior } from '../constants/share-active-skills/shadow-warrior';
 import { ElementType } from '../constants/element-type.const';
@@ -202,40 +203,14 @@ export class Oboro extends Ninja {
         return 100 + skillLevel * 100;
       },
     },
-    {
-      label: 'Cross Slash Lv10',
-      name: 'Cross Slash',
-      value: 'Cross Slash==10',
-      acd: 0,
-      fct: 0,
-      vct: 0,
-      cd: 3.1,
-      hit: 2,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { model, skillLevel } = input;
-        const baseLevel = model.level;
-        const bonus = this.isSkillActive('Cross Wound') ? baseLevel * skillLevel : 0;
-
-        return skillLevel * 200 * (baseLevel / 100) + bonus;
-      },
-    },
+    CROSS_SLASH,
   ];
 
   private readonly activeSkillList2nd: ActiveSkillModel[] = [
     ShadowWarrior,
     S16thNight,
     DistortedCrescent,
-    {
-      label: 'Ferida Cruzada', // Cross Wound debuff inflicted by Impacto Cruzado (Cross Slash) — bROwiki
-      name: 'Cross Wound',
-      icon: 3004, // KO_JYUMONJIKIRI (Impacto Cruzado) — the skill that inflicts the debuff
-      isDebuff: true,
-      inputType: 'selectButton',
-      dropdown: [
-        { label: 'Yes', value: 1, isUse: true },
-        { label: 'No', value: 0, isUse: false },
-      ],
-    },
+    CROSS_WOUND,
   ];
 
   private readonly passiveSkillList2nd: PassiveSkillModel[] = [

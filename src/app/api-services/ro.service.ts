@@ -4,7 +4,7 @@ import * as yaml from 'js-yaml';
 import { Observable, forkJoin, map, shareReplay, tap } from 'rxjs';
 import { createRawTotalBonus } from 'src/app/utils';
 import { environment } from 'src/environments/environment';
-import { OFFENSIVE_SKILL_NAMES } from '../constants/skill-name';
+import { VALID_SKILL_IDS } from '../skills';
 import { validClassNameSet } from './valid-bonuses';
 
 type baseStat = 'Str' | 'Agi' | 'Int' | 'Dex' | 'Luk' | 'Vit' | 'Pow' | 'Con' | 'Crt' | 'Spl' | 'Sta' | 'Wis';
@@ -29,8 +29,6 @@ export class RoService {
   private cachedItems$: Observable<any>;
   private cachedHpSpTable$: Observable<any>;
   private cachedLatamClasses$: Observable<number[]>;
-  private cachedLatamSkills$: Observable<Record<string, { id: number; name: string }>>;
-  private cachedLatamSkillDesc$: Observable<Record<string, string>>;
   private cachedItemViews$: Observable<Record<string, [number, number]>>;
   private _isFirst = true;
 
@@ -84,7 +82,6 @@ export class RoService {
         const its = Object.values(items) as any[];
         const invalidBonusSet = new Set();
         const invalidClassNameSet = new Set();
-        const validSkillNameSet = new Set(OFFENSIVE_SKILL_NAMES as any);
 
         for (const item of its) {
           const script = item.script as Record<string, string[]>;
@@ -107,7 +104,8 @@ export class RoService {
               .replace('cd__', '');
             if (validStatusSet.has(realKey)) continue;
             if (invalidBonusSet.has(realKey)) continue;
-            if (validSkillNameSet.has(realKey)) continue;
+            // skill bonus keys are now in-game skill ids (see Skill Catalog)
+            if (/^\d+$/.test(realKey) && VALID_SKILL_IDS.has(Number(realKey))) continue;
 
             invalidBonusSet.add(realKey);
           }
@@ -128,14 +126,8 @@ export class RoService {
     // Job-icon ids present in the LATAM client GRF (from tools/build-latam-db.mjs);
     // classes whose icon isn't here are unreleased on LATAM and hidden in the UI.
     this.cachedLatamClasses$ = this.http.get<number[]>('assets/demo/data/latam-classes.json').pipe(shareReplay(1));
-    // English skill name -> { id, pt-BR name } (from tools/build-latam-skills.mjs).
-    this.cachedLatamSkills$ = this.http
-      .get<Record<string, { id: number; name: string }>>('assets/demo/data/latam-skills.json')
-      .pipe(shareReplay(1));
-    // skill id -> pt-BR client skill description (from tools/build-latam-skill-desc.mjs).
-    this.cachedLatamSkillDesc$ = this.http
-      .get<Record<string, string>>('assets/demo/data/latam-skill-desc.json')
-      .pipe(shareReplay(1));
+    // skill localization (id, pt-BR name, description) now lives in the static
+    // Skill Catalog (src/app/skills), not in fetched JSON.
     // item id -> sprite "view" id (client ClassNum) for rendering equipped gear
     // (headgear/garment) on the character paper-doll (from tools/build-item-views.mjs).
     this.cachedItemViews$ = this.http
@@ -165,14 +157,6 @@ export class RoService {
 
   getLatamClasses(): Observable<number[]> {
     return this.cachedLatamClasses$;
-  }
-
-  getLatamSkills(): Observable<Record<string, { id: number; name: string }>> {
-    return this.cachedLatamSkills$;
-  }
-
-  getLatamSkillDesc(): Observable<Record<string, string>> {
-    return this.cachedLatamSkillDesc$;
   }
 
   private generateHpSp() {
