@@ -1261,9 +1261,10 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
             `${summary.player || 'Personagem'} — nível ${summary.baseLevel}, ${summary.equippedCount} equipamentos` +
             (summary.appliedOptions ? `, ${summary.appliedOptions} bônus aleatórios` : '') +
             (summary.learnedSkillCount ? `, ${summary.learnedSkillCount} habilidades` : '') +
-            (skipped ? `, ${skipped} ignorado(s) (fora do banco de dados)` : '') +
-            '. ⚠️ Talentos (POD/STA/SAB/FEI/CON/CRV) não são gravados no replay — ajuste-os manualmente.';
+            (skipped ? `, ${skipped} ignorado(s) (fora do banco de dados)` : '') + '.';
+          const traitsWarn = '⚠️ Talentos (POD/STA/SAB/FEI/CON/CRV) não são gravados no replay — ajuste-os manualmente.'
           this.messageService.add({ severity: 'success', summary: 'Replay importado', detail, life: 9000 });
+          this.messageService.add({ severity: 'warn', summary: 'Talentos', detail: traitsWarn, life: 9000 });
         },
         error: (err) => {
           this.replayBusy = false;
