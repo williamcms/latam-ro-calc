@@ -191,7 +191,6 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   accRightCardList: DropdownModel[] = [];
   petList: DropdownModel[] = [];
 
-
   costumeUpperList: DropdownModel[] = [];
   costumeMiddleList: DropdownModel[] = [];
   costumeLowerList: DropdownModel[] = [];
@@ -1262,9 +1261,10 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
             `${summary.player || 'Personagem'} — nível ${summary.baseLevel}, ${summary.equippedCount} equipamentos` +
             (summary.appliedOptions ? `, ${summary.appliedOptions} bônus aleatórios` : '') +
             (summary.learnedSkillCount ? `, ${summary.learnedSkillCount} habilidades` : '') +
-            (skipped ? `, ${skipped} ignorado(s) (fora do banco de dados)` : '') +
-            '. ⚠️ Talentos (POD/STA/SAB/FEI/CON/CRV) não são gravados no replay — ajuste-os manualmente.';
+            (skipped ? `, ${skipped} ignorado(s) (fora do banco de dados)` : '') + '.';
+          const traitsWarn = '⚠️ Talentos (POD/STA/SAB/FEI/CON/CRV) não são gravados no replay — ajuste-os manualmente.'
           this.messageService.add({ severity: 'success', summary: 'Replay importado', detail, life: 9000 });
+          this.messageService.add({ severity: 'warn', summary: 'Talentos', detail: traitsWarn, life: 9000 });
         },
         error: (err) => {
           this.replayBusy = false;
@@ -2302,9 +2302,15 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     if ((m = key.match(/^pene_(res|mres)_race_(\w+)$/))) {
       return `Penetrar ${m[1].toUpperCase()} (Raça: ${sub[m[2]] ?? m[2]})`;
     }
+    // Chance of activating something
+    if ((m = key.match(/^chance__(\w+)$/))) {
+      const determinedBonus = this.buffBonusLabels[m[1]] ?? this.decodeStructuredBonusKey(m[1])
+      return `Chance de ${determinedBonus ?? m[1].toUpperCase()}`;
+    }
     // Combo bonuses
     if ((m = key.match(/^(vct|fct|cd)__(.+)$/))) {
-      return `Redução de ${this.itemBonusLabels[m[1]]} de ${sub[m[2]] ?? m[2]}`;
+      const resolvedSkill = this.resolveSkillKey(m[2]);
+      return `Redução de ${this.itemBonusLabels[m[1]]} de ${resolvedSkill ? resolvedSkill.name : resolvedSkill}`;
     }
     return undefined;
   }
