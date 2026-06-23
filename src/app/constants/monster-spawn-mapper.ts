@@ -64,6 +64,10 @@ const Mapper = {
   lhz_dun_n: 'lhz_dun_n',
   ba_pw03: 'ba_pw03',
   ba_lost: '150 - 160 ba_lost',
+  // Dedicated group for the browiki MVP list. Membership is driven by MVP_IDS
+  // (see constants/mvp.ts) in setMonsterDropdownList, not by a real spawn code;
+  // this entry just registers the "MVPs" label so it shows up in the group filter.
+  MVP: 'MVPs',
 } as const;
 
 export const MonsterGroupNames = [...new Set(Object.values(Mapper))].sort((a, b) => (a > b ? 1 : -1));

@@ -1,4 +1,4 @@
-import { ElementType } from '../constants';
+import { ElementType, RED_AURA_MVP_IDS } from '../constants';
 import { MonsterModel } from '../models/monster.model';
 import { firstUppercase, floor } from '../utils';
 
@@ -35,6 +35,11 @@ interface PreparedMonsterModel {
   elementLevelUpper: string;
   type: 'normal' | 'boss';
   isMvp: boolean;
+  /**
+   * MVPs that spawn with a red aura (see RED_AURA_MVP_IDS). The red aura reduces
+   * the final damage dealt to the monster by 99.9%.
+   */
+  isRedAura: boolean;
   typeUpper: 'Normal' | 'Boss';
   softDef: number;
   softMDef: number;
@@ -70,6 +75,7 @@ export class Monster {
     elementLevelUpper: 'neutral 1',
     type: 'normal',
     isMvp: false,
+    isRedAura: false,
     typeUpper: 'Normal',
     softDef: 1,
     softMDef: 1,
@@ -126,6 +132,9 @@ export class Monster {
   get isMVP() {
     return this._monsterData.isMvp;
   }
+  get isRedAura() {
+    return this._monsterData.isRedAura;
+  }
 
   get spawn() {
     return this._monster.spawn || '';
@@ -160,6 +169,7 @@ export class Monster {
       sizeFullUpper: scaleName as any,
       type: _class,
       isMvp: mvp === 1,
+      isRedAura: RED_AURA_MVP_IDS.has(monster.id),
       typeUpper: firstUppercase(_class) as any,
       hp: health,
       def: defense,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ElementType } from '../constants';
+import { ElementType, RED_AURA_MVP_IDS } from '../constants';
 import { MonsterModel } from '../models/monster.model';
 import { Monster } from './monster';
 
@@ -83,5 +83,25 @@ describe('Monster.setData', () => {
   it('setData is chainable', () => {
     const m = new Monster();
     expect(m.setData(monster())).toBe(m);
+  });
+
+  describe('red aura', () => {
+    it('flags MVPs that are in the red-aura list (Orc Hero 1087)', () => {
+      expect(RED_AURA_MVP_IDS.has(1087)).toBe(true);
+      const m = new Monster().setData({ ...monster({ class: 1, mvp: 1 }), id: 1087 } as MonsterModel);
+      expect(m.isRedAura).toBe(true);
+      expect(m.data.isRedAura).toBe(true);
+    });
+
+    it('does not flag MVPs without a red aura (Gemaring 3505)', () => {
+      expect(RED_AURA_MVP_IDS.has(3505)).toBe(false);
+      const m = new Monster().setData({ ...monster({ class: 1, mvp: 1 }), id: 3505 } as MonsterModel);
+      expect(m.isRedAura).toBe(false);
+    });
+
+    it('does not flag ordinary monsters (Poring 1002)', () => {
+      const m = new Monster().setData({ ...monster(), id: 1002 } as MonsterModel);
+      expect(m.isRedAura).toBe(false);
+    });
   });
 });

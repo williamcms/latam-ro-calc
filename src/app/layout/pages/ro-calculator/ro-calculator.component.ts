@@ -27,6 +27,7 @@ import {
   WeaponTypeName,
   WeaponTypeNameMapBySubTypeId,
   getMonsterSpawnMap,
+  MVP_IDS,
 } from 'src/app/constants';
 import { ActiveSkillModel, AtkSkillModel, CharacterBase, ClassIdBySpriteJob, ClassName, PassiveSkillModel, SkillModel } from 'src/app/jobs';
 import {
@@ -1536,7 +1537,9 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       const { id, name, spawn, stats } = mon;
       const { level, health, mvp, class: _class, elementShortName, raceName, scaleName } = stats;
 
-      const spawnMap = mvp === 1 ? ' Boss' : getMonsterSpawnMap(spawn) || (_class === 1 ? ' Boss' : 'Etc');
+      // MVPs from the browiki list get their own "MVPs" group (id-driven, so the
+      // monster's real spawn — used by SPAWN[] item bonuses — stays intact).
+      const spawnMap = MVP_IDS.has(id) ? 'MVPs' : mvp === 1 ? ' Boss' : getMonsterSpawnMap(spawn) || (_class === 1 ? ' Boss' : 'Etc');
       const group = groupMap.get(spawnMap);
       const monster: DropdownModel = {
         label: `${level} ${name} (${racePtBr(raceName)} ${sizePtBr(scaleName).at(0)})`,

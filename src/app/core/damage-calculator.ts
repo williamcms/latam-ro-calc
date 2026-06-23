@@ -278,6 +278,18 @@ export class DamageCalculator {
     return n < 0 ? 1 : n;
   }
 
+  /**
+   * Red-aura MVPs reduce the final damage dealt to them by 99.9% (only 0.1%
+   * lands). Applied to each final damage number (physical/magical skills and
+   * basic/crit autoattacks) right before it is returned. No-op for every other
+   * monster, so non-red targets are unaffected.
+   */
+  private applyAuraReduction(n: number) {
+    if (!this.monster?.data?.isRedAura) return n;
+
+    return floor(n * 0.001);
+  }
+
   private isRangeAtk() {
     return this.weaponData?.data?.rangeType === 'range';
   }
@@ -919,21 +931,25 @@ export class DamageCalculator {
     const extraDmgCri = canCri ? floor(extraDmg * criMultiplier) : extraDmg;
 
     const rawMaxDamage = skillFormula(totalMaxOver, canCri) + extraDmgCri;
-    const maxDamage = this._class.calcSkillDmgByTotalHit({
-      info: this.infoForClass,
-      finalDamage: rawMaxDamage,
-      skill: skillData,
-    });
+    const maxDamage = this.applyAuraReduction(
+      this._class.calcSkillDmgByTotalHit({
+        info: this.infoForClass,
+        finalDamage: rawMaxDamage,
+        skill: skillData,
+      }),
+    );
 
     const rawMinDamage = canCri ? skillFormula(totalMax, canCri) : skillFormula(totalMin, canCri);
-    const minDamage = this._class.calcSkillDmgByTotalHit({
-      info: this.infoForClass,
-      finalDamage: rawMinDamage + extraDmgCri,
-      skill: skillData,
-    });
+    const minDamage = this.applyAuraReduction(
+      this._class.calcSkillDmgByTotalHit({
+        info: this.infoForClass,
+        finalDamage: rawMinDamage + extraDmgCri,
+        skill: skillData,
+      }),
+    );
 
-    const rawMinNoCri = canCri ? skillFormula(totalMin, false) + extraDmgCri : 0;
-    const rawMaxNoCri = canCri ? skillFormula(totalMaxOver, false) + extraDmgCri : 0;
+    const rawMinNoCri = this.applyAuraReduction(canCri ? skillFormula(totalMin, false) + extraDmgCri : 0);
+    const rawMaxNoCri = this.applyAuraReduction(canCri ? skillFormula(totalMaxOver, false) + extraDmgCri : 0);
 
     return {
       minDamage,
@@ -1046,18 +1062,22 @@ export class DamageCalculator {
     const weaponMaxDmg = skillFormula(weaponMaxMatk * this.myticalAmp + rawMatk);
 
     const rawMaxDamage = weaponMaxDmg;
-    const maxDamage = this._class.calcSkillDmgByTotalHit({
-      info: this.infoForClass,
-      finalDamage: rawMaxDamage,
-      skill: skillData,
-    });
+    const maxDamage = this.applyAuraReduction(
+      this._class.calcSkillDmgByTotalHit({
+        info: this.infoForClass,
+        finalDamage: rawMaxDamage,
+        skill: skillData,
+      }),
+    );
 
     const rawMinDamage = weaponMinDmg;
-    const minDamage = this._class.calcSkillDmgByTotalHit({
-      info: this.infoForClass,
-      finalDamage: rawMinDamage,
-      skill: skillData,
-    });
+    const minDamage = this.applyAuraReduction(
+      this._class.calcSkillDmgByTotalHit({
+        info: this.infoForClass,
+        finalDamage: rawMinDamage,
+        skill: skillData,
+      }),
+    );
 
     // console.log({
     //   skillPropertyAtk,
@@ -1116,8 +1136,8 @@ export class DamageCalculator {
       return this.toPreventNegativeDmg(total);
     };
 
-    const basicMinDamage = formula(totalMin + extraDmg + extraBasicDmg);
-    const basicMaxDamage = formula(totalMax + extraDmg + extraBasicDmg);
+    const basicMinDamage = this.applyAuraReduction(formula(totalMin + extraDmg + extraBasicDmg));
+    const basicMaxDamage = this.applyAuraReduction(formula(totalMax + extraDmg + extraBasicDmg));
 
     return { basicMinDamage, basicMaxDamage };
   }
@@ -1155,8 +1175,8 @@ export class DamageCalculator {
       return this.toPreventNegativeDmg(total);
     };
 
-    const criMinDamage = formula(totalMaxAtk) + extraDmg + formula(extraBasic, false);
-    const criMaxDamage = formula(totalMaxAtkOver) + extraDmg + formula(extraBasic, false);
+    const criMinDamage = this.applyAuraReduction(formula(totalMaxAtk) + extraDmg + formula(extraBasic, false));
+    const criMaxDamage = this.applyAuraReduction(formula(totalMaxAtkOver) + extraDmg + formula(extraBasic, false));
 
     return { criMinDamage, criMaxDamage, sizePenalty: 100 };
   }
