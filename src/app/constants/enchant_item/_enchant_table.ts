@@ -306,6 +306,9 @@ const automaticJobs = [
   'Automatic_Orb95',
   'Automatic_Orb96',
 ];
+// B- Básico defensivos: B-DEF (Orb1, DEF +300 @+11) e B-DEFM (Orb2, DEFM +29 @+11).
+// browiki Equipamentos_Automatron: aplicam em Colete/Motor/Perna (e Escudo) — x3.
+const automaticBasicDef = ['Automatic_Orb1', 'Automatic_Orb2'];
 const automaticArmor2 = [
   'Automatic_Orb18',
   'Automatic_Orb19',
@@ -318,9 +321,10 @@ const automaticArmor2 = [
   'Automatic_Orb29',
   'Automatic_Orb36',
 ];
-const automaticArmor = [...automaticArmor2, ...automaticJobs];
-const automaticGarment = ['Automatic_Orb21', 'Automatic_Orb22', 'Automatic_Orb23', 'Automatic_Orb38'];
+const automaticArmor = [...automaticBasicDef, ...automaticArmor2, ...automaticJobs];
+const automaticGarment = [...automaticBasicDef, 'Automatic_Orb21', 'Automatic_Orb22', 'Automatic_Orb23', 'Automatic_Orb38'];
 const automaticBoot = [
+  ...automaticBasicDef,
   'Automatic_Orb15',
   'Automatic_Orb16',
   'Automatic_Orb30',
