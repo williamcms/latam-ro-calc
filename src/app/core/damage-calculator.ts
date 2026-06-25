@@ -779,8 +779,19 @@ export class DamageCalculator {
     // Neutral 1
     let pMultiplier = ElementMapper[this.monster.elementName][propertyAtk];
     pMultiplier = pMultiplier * this.getVIAmp(propertyAtk);
+    pMultiplier += this.getElementResistReduction(propertyAtk);
 
     return round(this.toPercent(pMultiplier), 2);
+  }
+
+  /** Reductions to the target's elemental resistance, added (in percentage points)
+   *  to the property modifier — lowering the target's resistance makes that property
+   *  land for more, exactly as rAthena's `ele_fix += ...`. Oratio lowers Holy
+   *  resistance (−2% per level, −20% at Lv 10). */
+  private getElementResistReduction(propertyAtk: ElementType) {
+    if (propertyAtk === ElementType.Holy) return this.totalBonus['oratio'] || 0;
+
+    return 0;
   }
 
   private getPurePropertyMultiplier(propertyAtk: ElementType) {

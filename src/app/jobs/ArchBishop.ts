@@ -176,37 +176,6 @@ export class ArchBishop extends HighPriest {
         return (300 + skillLevel * 250) * (baseLevel / 100);
       },
     },
-    {
-      name: 'Hell Inferno',
-      label: 'Hell Inferno Lv5',
-      value: 'Hell Inferno==5',
-      fct: 1,
-      vct: 3,
-      acd: 0.5,
-      cd: 3,
-      isMatk: true,
-      element: ElementType.Fire,
-      formula: (input: AtkSkillFormulaInput): number => {
-        const { model, skillLevel } = input;
-        const baseLevel = model.level;
-
-        return skillLevel * 400 * (baseLevel / 100);
-      },
-      part2: {
-        label: 'Shadow Dmg',
-        isIncludeMain: true,
-        element: ElementType.Dark,
-        isMatk: true,
-        isMelee: false,
-        hit: 3,
-        formula: (input: AtkSkillFormulaInput): number => {
-          const { model, skillLevel } = input;
-          const baseLevel = model.level;
-
-          return skillLevel * 600 * (baseLevel / 100);
-        },
-      },
-    },
   ];
   protected readonly activeSkillList3rd: ActiveSkillModel[] = [
     {

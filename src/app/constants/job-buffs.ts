@@ -343,6 +343,19 @@ const JobBuffsList: ActiveSkillModel[] = [
     ],
   },
   {
+    // Oratio (Arch Bishop) lowers the target's Holy property resistance by 2% per
+    // level (−20% at Lv 10), so Holy attacks land for that much more. browiki.org/wiki/Oratio
+    name: 'Oratio',
+    label: 'Oratio 10',
+    icon: 2046,
+    inputType: 'selectButton',
+    isDebuff: true,
+    dropdown: [
+      { label: 'Yes', isUse: true, value: 10, bonus: { oratio: 20 } },
+      { label: 'No', isUse: false, value: 0 },
+    ],
+  },
+  {
     name: '_Meister_Quake',
     label: 'Avanço Sísmico',
     icon: 5296,

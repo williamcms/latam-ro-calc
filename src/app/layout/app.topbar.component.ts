@@ -103,6 +103,34 @@ export class AppTopBarComponent {
 
   updates: { v: string; date: string; logs: string[]; }[] = [
     {
+      v: '0.1.1-beta',
+      date: '25-06-2026',
+      logs: [
+        // Calculadora & interface
+        'Descrições dos Itens: bônus percentuais agora exibem "%". Obrigado ao luishviana por reportar.',
+        'Reduções de conjuração agora aparecem como negativas — Pós-conjuração e Conj. Variável em -x% e Conj. Fixa em segundos negativos.',
+        'Novo debuff no monstro: Oratio (reduz a resistência à propriedade Sagrado do alvo).',
+        'A comparação de itens agora inclui o slot de Escudo.',
+        'Na comparação, as ativações (Efeitos) do item comparado também passam a aparecer.',
+        'Pós-conjuração de Tiro Crescente (Crescive Bolt) ajustada para 0,5s. Obrigado ao vinicius_mdantas por reportar.',
+        'Rótulos e descrições para os bônus de ativação (chance) e para os combos de itens.',
+        'Resumo de Batalha: rótulos de conjuração padronizados em pt-BR (Conj. Fixa, Conj. Variável, Recarga, VelAtq).',
+        'Habilidades repetidas com propriedades diferentes agora exibem o elemento no nome (ex.: "Adoramus - Sagrado" e "Adoramus - Neutro").',
+        // Importação de replay
+        'Importação de Bônus Aleatórios e da aparência do personagem a partir do replay (.rrf).',
+        'Replay: leitura do sexo do personagem, mensagens separadas de carregamento e de aviso de traços, e preservação de encantes ausentes na tabela kRO.',
+        // Itens & monstros
+        'Mais de 282 itens LATAM adicionados ao banco de dados (preenchimento via replays).',
+        'Novos itens: Manto Branco (Físico e Mágico), Cachecol Mágico de Schmidt, Selo de Paus, Selo de Ouros, Pingente da Celine e os encantes do Automatron B-Básico (DEF/DEFM).',
+        'Novos monstros: Glastheim Infernal, Werner e Villa, além dos MVPs do browiki (com grupo de MVPs e redução de dano por aura vermelha).',
+        'Contagem de slots dos itens e banco de itens/monstros LATAM atualizados após a atualização do jogo.',
+        // Correções
+        'Correções de recarga em habilidades (Disparo Perfurante, Zero Absoluto) e de scripts/combos de vários itens (Cachecol de Schmidt, Manto Branco, itens da Celine).',
+        'Removida a habilidade Chamas de Hela (Hell Inferno), que aparecia incorretamente em Arcebispo e Cardeal.',
+        'Correções internas no motor de cálculo: catálogo de habilidades por ID, condições de refino por slot e migração de itens/habilidades para IDs.',
+      ],
+    },
+    {
       v: '0.1.0-beta',
       date: '18-06-2026',
       logs: [

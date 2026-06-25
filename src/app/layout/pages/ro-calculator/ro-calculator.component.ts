@@ -262,7 +262,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
   isShowBonusBreakdown = false;
   bonusBreakdownTitle = '';
   bonusBreakdownValueClass = 'summary_damage';
-  bonusBreakdownRows: { label: string; icon?: number; iconType: 'item' | 'skill'; value: number; isPercent?: boolean }[] = [];
+  bonusBreakdownRows: { label: string; icon?: number; iconType: 'item' | 'skill'; value: number; display: string }[] = [];
   modelSummary: any;
   totalSummary: any;
 
@@ -428,13 +428,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
         this.onSelectItemDescription(Boolean(this.selectedCompareItemDesc));
         this.applySummaryTables();
 
-        this.chanceList = this.calculator.chanceList;
-        const fixedSelectedChances = this.chanceList
-          .filter(({ name }) => {
-            return this.selectedChances.includes(name);
-          })
-          .map(({ name }) => name);
-        this.selectedChances = fixedSelectedChances;
+        this.refreshChanceList();
 
         this.isCalculatingEvent.next(false);
         itemChanges.clear();
@@ -507,6 +501,9 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
         } else {
           this.resetModel2();
         }
+        // Refresh the Efeitos list so an activation that only exists on the item being
+        // compared (e.g. its card's Instinto) shows up alongside the main build's.
+        this.refreshChanceList();
         this.onSelectItemDescription(this.isEnableCompare && Boolean(this.selectedCompareItemDesc));
 
         this.isCalculatingEvent.next(false);
@@ -805,6 +802,26 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       this.totalSummary2 = calc2.getTotalSummary();
       this.compareItemSummaryModel = calc2.getItemSummary();
     }
+  }
+
+  /** Rebuild the toggleable Efeitos (item activations) list: the main build's chances
+   *  plus — while comparing — the compare build's, so an activation that only exists on
+   *  the item being compared still appears (deduped by name). A compare-only chance,
+   *  when toggled on, applies to the compare column (calc2 filters it back in) and is a
+   *  no-op on the main column. Prunes selections that no longer have a matching chance. */
+  private refreshChanceList() {
+    const merged = [...this.calculator.chanceList];
+    if (this.isEnableCompare) {
+      const seen = new Set(merged.map((c) => c.name));
+      for (const c of this.calculator2.chanceList) {
+        if (!seen.has(c.name)) {
+          seen.add(c.name);
+          merged.push(c);
+        }
+      }
+    }
+    this.chanceList = merged;
+    this.selectedChances = this.selectedChances.filter((name) => merged.some((c) => c.name === name));
   }
 
   /**
@@ -1377,7 +1394,19 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     this.skillBuffs = JobBuffs.map(attachIcon);
     this.activeSkills = this.selectedCharacter.activeSkills.map(localize);
     this.passiveSkills = this.selectedCharacter.passiveSkills.map(localize);
-    this.atkSkills = this.selectedCharacter.atkSkills.map(localize);
+    // Atk skills can repeat the same name with different fixed properties (e.g. Adoramus
+    // cast as Holy vs Neutral). After localizing the bare skill name, disambiguate any
+    // repeated name by appending its element, so the picker reads "Adoramus - Sagrado".
+    const localizedAtkSkills = this.selectedCharacter.atkSkills.map(localize);
+    const seenLabel = new Set<string>();
+    const dupLabels = new Set<string>();
+    for (const s of localizedAtkSkills) {
+      if (seenLabel.has(s.label)) dupLabels.add(s.label);
+      seenLabel.add(s.label);
+    }
+    this.atkSkills = localizedAtkSkills.map((s) =>
+      dupLabels.has(s.label) && s.element ? { ...s, label: `${s.label} - ${elementPtBr(s.element)}` } : s,
+    );
     this.offensiveSkills = [...new Set(this.selectedCharacter.atkSkills.map((a) => a.name)).values()].map((name) => {
       const pt = this.resolveSkill(name);
       return { label: pt?.name ?? name, value: name, icon: pt?.id };
@@ -2234,7 +2263,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
         const display = typeof value === 'number' ? `${fmt(value)}%` : `${value}`;
         return { label: skill.name, icon: skill.id, display, isSkill: true };
       }
-      const display = typeof value === 'number' ? fmt(value) : `${value}`;
+      const display = typeof value === 'number' ? this.bonusValueText(key, value) : `${value}`;
       return { label: this.bonusKeyLabel(key), display, isSkill: false };
     });
     return [...rows.filter((r) => !r.isSkill), ...rows.filter((r) => r.isSkill)];
@@ -2357,7 +2386,7 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     def: 'DEF', mdef: 'MDEF',
     p_pene_race_all: 'Penetração Física (Raça)', m_pene_race_all: 'Penetração Mágica (Raça)',
     pene_res: 'Penetrar Res', pene_mres: 'Penetrar MRes',
-    monster_res: 'Res do alvo', monster_mres: 'MRes do alvo',
+    monster_res: 'Res do alvo', monster_mres: 'MRes do alvo', oratio: 'Reduz Res. Sagrado do alvo',
     comet: 'Dano Cometa', raid: 'Dano físico recebido', darkClaw: 'Garra Sombria',
     sporeExplosion: 'Dano recebido', quake: 'Dano físico recebido', oleumSanctum: 'Oleum Sanctum',
     mysticAmp: 'Ampl. Mística', magnumBreakPsedoBonus: 'Impacto Explosivo', magnumBreakClearEDP: 'Limpar EDP',
@@ -2419,14 +2448,48 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
     return [stat, `${stat}Boost`, this.mainStats.has(stat) ? 'allStatus' : 'allTrait'];
   }
 
-  /** A bonus key whose value is a percentage (so the breakdown row shows "%"): the
-   *  `*Percent` keys, the structured `p_/m_/pene_` damage keys, and a few named ones. */
+  /** A bonus key whose value is a percentage (so it renders with a trailing "%"): the
+   *  `*Percent` keys, the structured `p_/m_/pene_` damage keys, the cast/delay reduction
+   *  percents (acd/vct/…, incl. per-skill `vct__`/`acd__`/`fctPercent__` combos), and a
+   *  few named ones. */
   private isPercentKey(k: string): boolean {
-    return /Percent$/.test(k) || /^(p|m)_/.test(k) || /^pene_/.test(k) || ['range', 'melee', 'criDmg', 'cri', 'perfectHit'].includes(k);
+    return (
+      /Percent$/.test(k) ||
+      /^(p|m)_/.test(k) ||
+      /^pene_/.test(k) ||
+      /^(vct|acd|fctPercent)__/.test(k) ||
+      ['range', 'melee', 'criDmg', 'cri', 'perfectHit', 'acd', 'vct', 'vct_inc', 'vctBySkill'].includes(k)
+    );
+  }
+
+  /** A cast/delay/cooldown stat stored as a positive *reduction* magnitude but read as a
+   *  negative effect — displayed negated, so a stored +25 renders as "-25%" (Pós-conjuração,
+   *  Conj. Variável) or a stored +0.5 as "-0.5" seconds (Conj. Fixa). `vct_inc` is excluded:
+   *  it's a cast-time *increase*, so its positive value reads as "+x%". */
+  private isReductionKey(k: string): boolean {
+    return ['acd', 'vct', 'fct', 'fctPercent', 'vctBySkill'].includes(k);
+  }
+
+  /** "+12", "-25%", "0%": a leading "+" only for positives (negatives already carry their
+   *  own "-"), with an optional trailing "%". */
+  private formatSignedValue(value: number, isPercent: boolean): string {
+    return `${value > 0 ? '+' : ''}${value}${isPercent ? '%' : ''}`;
+  }
+
+  /** Format a numeric equip/item bonus for display: percent bonuses get a trailing "%"
+   *  (matching the breakdown modal); reduction stats (cast/delay) are negated so they read
+   *  as the negative effect they apply. Used by the item-description rows and the summary. */
+  bonusValueText(key: string, value: number | undefined): string {
+    const v = value || 0;
+    const shown = this.isReductionKey(key) ? -v : v;
+    return this.formatSignedValue(shown, this.isPercentKey(key));
   }
 
   showBonusBreakdown(event: { label: string; keys: string[]; valueClass: string }): void {
     const rows: typeof this.bonusBreakdownRows = [];
+    // The summary value being broken down is a reduction (and so shown negated) when every
+    // queried key is one — cast/delay stats are always queried alone (e.g. ['acd']).
+    const isReduction = event.keys.length > 0 && event.keys.every((k) => this.isReductionKey(k));
     for (const [srcKey, bonusMap] of Object.entries(this.bonusBreakdownSources || {})) {
       if (!bonusMap || typeof bonusMap !== 'object') continue;
       let sum = 0;
@@ -2442,7 +2505,8 @@ export class RoCalculatorComponent implements OnInit, OnDestroy {
       }
       if (!sum) continue;
       // a source contributes via one unit type in practice; only flag "%" when it's purely percent
-      rows.push({ ...this.resolveBonusSource(srcKey, sum), isPercent: pct > 0 && flat === 0 });
+      const display = this.formatSignedValue(isReduction ? -sum : sum, pct > 0 && flat === 0);
+      rows.push({ ...this.resolveBonusSource(srcKey, sum), display });
     }
     rows.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
 

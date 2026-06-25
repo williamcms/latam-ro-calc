@@ -166,7 +166,7 @@ export class Windhawk extends Ranger {
       name: 'Crescive Bolt',
       label: '[V3] Crescive Bolt Lv10',
       value: 'Crescive Bolt==10',
-      acd: 0.3,
+      acd: 0.5,
       fct: 1,
       vct: 1,
       cd: 0.15,

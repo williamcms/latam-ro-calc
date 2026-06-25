@@ -90,7 +90,7 @@
         <img *ngIf="r.icon" [src]="r.icon | iconUrl: r.iconType" alt="" class="skill_icon" />
         <span>{{ r.label }}</span>
       </span>
-      <span class="{{ bonusBreakdownValueClass }} font-semibold ml-2">{{ r.value > 0 ? '+' + r.value : r.value }}{{ r.isPercent ? '%' : '' }}</span>
+      <span class="{{ bonusBreakdownValueClass }} font-semibold ml-2">{{ r.display }}</span>
     </li>
   </ul>
 </p-dialog>
@@ -474,15 +474,15 @@
                   </div>
                   <div class="col-12">
                     Pós-conjuração:
-                    <span class="font-semibold px-1 summary_stat_matk" [class.bonus_clickable]="canBreakdown(['acd'])" (click)="showBonusBreakdown({ label: 'Pós-conjuração', keys: ['acd'], valueClass: 'summary_stat_matk' })">{{ totalSummary?.acd || 0 }}</span>
+                    <span class="font-semibold px-1 summary_stat_matk" [class.bonus_clickable]="canBreakdown(['acd'])" (click)="showBonusBreakdown({ label: 'Pós-conjuração', keys: ['acd'], valueClass: 'summary_stat_matk' })">{{ bonusValueText('acd', totalSummary?.acd) }}</span>
                   </div>
                   <div class="col-12">
                     Conj. Fixa:
-                    <span class="font-semibold px-1 summary_stat_matk" [class.bonus_clickable]="canBreakdown(['fct'])" (click)="showBonusBreakdown({ label: 'Conj. Fixa', keys: ['fct'], valueClass: 'summary_stat_matk' })">{{ totalSummary?.fct || 0 }}</span>
+                    <span class="font-semibold px-1 summary_stat_matk" [class.bonus_clickable]="canBreakdown(['fct'])" (click)="showBonusBreakdown({ label: 'Conj. Fixa', keys: ['fct'], valueClass: 'summary_stat_matk' })">{{ bonusValueText('fct', totalSummary?.fct) }}</span>
                   </div>
                   <div class="col-12">
                     Conj. Variável:
-                    <span class="font-semibold px-1 summary_stat_matk" [class.bonus_clickable]="canBreakdown(['vct'])" (click)="showBonusBreakdown({ label: 'Conj. Variável', keys: ['vct'], valueClass: 'summary_stat_matk' })">{{ totalSummary?.vct || 0 }}</span>
+                    <span class="font-semibold px-1 summary_stat_matk" [class.bonus_clickable]="canBreakdown(['vct'])" (click)="showBonusBreakdown({ label: 'Conj. Variável', keys: ['vct'], valueClass: 'summary_stat_matk' })">{{ bonusValueText('vct', totalSummary?.vct) }}</span>
                   </div>
                   <div class="col-12">
                     DES2 INT1:
@@ -733,6 +733,32 @@
           (clearItemEvent)="onClearItem($event)"
           (gradeChange)="onSelectGrade($event.itemType, $event.itemId, $event.grade)"
           (optionChange)="onOptionChange()"
+        ></app-equipment>
+      </div>
+    </div>
+    <div class="grid grid-nogutter item_label_compare" *ngIf="showCompareItemMap.shield">
+      <div class="col-12">
+        <app-equipment
+          [itemType]="'shield'"
+          [placeholder]="'Escudo'"
+          [items]="items"
+          [mapEnchant]="mapEnchant"
+          [itemList]="shieldList"
+          [refineList]="refineList"
+          [cardList]="shieldCardList"
+          [optionList]="optionList"
+          [(itemId)]="model2.shield"
+          [(itemRefine)]="model2.shieldRefine"
+          [(card1Id)]="model2.shieldCard"
+          [(itemGrade)]="model2.shieldGrade"
+          [(enchant2Id)]="model2.shieldEnchant1"
+          [(enchant3Id)]="model2.shieldEnchant2"
+          [(enchant4Id)]="model2.shieldEnchant3"
+          [(option1Value)]="model2.rawOptionTxts[itemOptionNumber.Shield_1]"
+          [(option2Value)]="model2.rawOptionTxts[itemOptionNumber.Shield_2]"
+          (selectItemChange)="onCompareItemChange()"
+          (optionChange)="onCompareItemChange()"
+          (gradeChange)="onCompareItemChange()"
         ></app-equipment>
       </div>
     </div>
